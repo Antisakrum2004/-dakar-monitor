@@ -311,6 +311,57 @@
   }
   .filter-item.active .filter-count { color: #b0b5c0; }
 
+  /* — Employee section — */
+  .sidebar-employees {
+    padding: 2px 16px 10px 16px;
+  }
+  .sidebar-employees-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: #555c6a;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    padding-left: 4px;
+  }
+  .emp-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 4px;
+    color: #7e8490;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 4px;
+  }
+  .emp-item:hover { color: #c0c4cc; background: rgba(255,255,255,0.03); }
+  .emp-item.active { color: #ffffff; background: rgba(255,255,255,0.08); }
+  .emp-avatar-sm {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .emp-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .emp-task-count {
+    font-size: 10px;
+    color: #555c6a;
+    font-weight: 600;
+  }
+  .emp-item.active .emp-task-count { color: #b0b5c0; }
+
   /* — Spacer — */
   .sidebar-spacer { flex: 1; }
 
@@ -1082,14 +1133,102 @@
   }
   .mbtn.primary:hover { background: #2a9a84; }
 
-  /* API counter */
+  /* API counter in header */
   .api-counter {
     font-family: 'Courier New', monospace;
-    font-size: 9px;
+    font-size: 10px;
     color: #22d47e;
     opacity: 0.55;
-    margin-left: 6px;
     letter-spacing: 0.02em;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    line-height: 1.2;
+  }
+  .api-counter .ac-today {
+    font-size: 10px;
+    color: #22d47e;
+    opacity: 0.7;
+  }
+  .api-counter .ac-rate {
+    font-size: 9px;
+    color: #5a6070;
+    opacity: 0.8;
+  }
+
+  /* Reply button on hover */
+  .chat-msg-bubble {
+    position: relative;
+  }
+  .chat-msg-bubble .reply-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: none;
+    background: rgba(255,255,255,0.08);
+    color: #666d7a;
+    font-size: 10px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    z-index: 2;
+  }
+  .chat-msg-bubble:hover .reply-btn {
+    display: flex;
+  }
+  .chat-msg-bubble .reply-btn:hover {
+    background: rgba(40,136,116,0.3);
+    color: #288874;
+  }
+  .chat-msg.self .chat-msg-bubble .reply-btn {
+    right: auto;
+    left: 4px;
+  }
+  /* Reply quote preview in input */
+  .reply-quote {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    background: rgba(40,136,116,0.1);
+    border-left: 2px solid #288874;
+    border-radius: 0 4px 4px 0;
+    font-size: 11px;
+    color: #8e949e;
+    margin-bottom: 6px;
+    animation: fadeInUp 0.15s ease;
+  }
+  .reply-quote-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #b0b5c0;
+  }
+  .reply-quote-close {
+    width: 16px;
+    height: 16px;
+    border: none;
+    background: transparent;
+    color: #666d7a;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .reply-quote-close:hover {
+    background: rgba(255,79,106,0.2);
+    color: #ff6b7f;
   }
 
   /* Chat input bar */
@@ -1293,6 +1432,10 @@
       </div>
     </div>
     <div class="header-actions">
+      <div class="api-counter" id="apiCounter">
+        <span class="ac-today" id="acToday">0 today</span>
+        <span class="ac-rate" id="acRate">0/min</span>
+      </div>
       <button class="hbtn" onclick="openConfig()" title="Настройки">&#9881;</button>
       <button class="hbtn primary" id="loadBtn" onclick="loadData()">
         <span class="btn-text">&#8635; Загрузить</span>
@@ -1362,6 +1505,17 @@
         </div>
       </div>
 
+      <!-- Separator -->
+      <div class="sidebar-sep"></div>
+
+      <!-- Employee list -->
+      <div class="sidebar-employees">
+        <div class="sidebar-employees-title">Исполнители</div>
+        <div id="employeeList">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
       <!-- Spacer -->
       <div class="sidebar-spacer"></div>
 
@@ -1417,6 +1571,7 @@
         <div class="chat-loading"><div class="ring"></div> Загрузка...</div>
       </div>
       <div class="chat-input-bar" id="chatInputBar" style="display:none">
+        <div id="replyQuoteArea"></div>
         <textarea class="chat-input" id="chatInput" placeholder="Введите сообщение..." rows="1" onkeydown="handleChatKey(event)"></textarea>
         <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">
           <span class="send-icon">➤</span>
@@ -1435,7 +1590,7 @@
     </div>
     <div class="status-right">
       <span class="status-sep">|</span>
-      <span id="statusRight">Дакар &middot; Bitrix24</span><span class="api-counter" id="apiCounter"></span>
+      <span id="statusRight">Дакар &middot; Bitrix24</span>
     </div>
   </div>
 </div>
@@ -1493,6 +1648,10 @@ var PERIOD_DAYS = 30;
 var apiCallCount = 0;
 var apiCallRate = 0;
 var apiRateTimer = null;
+var apiDailyTotal = 0;
+var replyToMsgId = null;
+var replyToText = '';
+var activeEmployee = null;
 
 /* ================================================================
    INIT
@@ -1517,6 +1676,16 @@ function initConfig() {
     lsSet('dk_empids', DEFAULT_EMP_IDS.join(','));
   }
   try { seenKeys = JSON.parse(localStorage.getItem('dk_seen') || '{}'); } catch (e) { seenKeys = {}; }
+  // Restore daily API counter
+  var savedDate = lsGet('dk_api_date');
+  var today = new Date().toISOString().substring(0, 10);
+  if (savedDate === today) {
+    apiDailyTotal = Number(lsGet('dk_api_daily')) || 0;
+  } else {
+    apiDailyTotal = 0;
+    lsSet('dk_api_daily', '0');
+    lsSet('dk_api_date', today);
+  }
 }
 
 function lsGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -1559,7 +1728,7 @@ function setStatus(msg, loading, isError) {
   leftHtml += esc(msg);
   document.getElementById('statusBar').innerHTML =
     '<div class="status-left">' + leftHtml + '</div>' +
-    '<div class="status-right"><span class="status-sep">|</span><span>Дакар · Bitrix24</span><span class="api-counter" id="apiCounter">' + apiCallCount + ' req · ' + apiCallRate + '/min</span></div>';
+    '<div class="status-right"><span class="status-sep">|</span><span>Дакар · Bitrix24</span></div>';
 }
 function setStatusTime() {
   if (!lastUpdateTime) return;
@@ -1575,6 +1744,9 @@ function setStatusTime() {
 function bxPost(method, body) {
   if (!HOOK) return Promise.resolve({ error: 'Вебхук не настроен' });
   apiCallCount++;
+  apiDailyTotal++;
+  lsSet('dk_api_daily', String(apiDailyTotal));
+  lsSet('dk_api_date', new Date().toISOString().substring(0, 10));
   updateApiCounter();
   var url = '/api/' + method + '?hook=' + encodeURIComponent(HOOK.trim());
   return fetch(url, {
@@ -1590,8 +1762,10 @@ function bxPost(method, body) {
 }
 
 function updateApiCounter() {
-  var el = document.getElementById('apiCounter');
-  if (el) el.textContent = apiCallCount + ' req · ' + apiCallRate + '/min';
+  var todayEl = document.getElementById('acToday');
+  var rateEl = document.getElementById('acRate');
+  if (todayEl) todayEl.textContent = apiDailyTotal + ' today';
+  if (rateEl) rateEl.textContent = apiCallRate + '/min';
 }
 
 function startApiRateTracker() {
@@ -1835,28 +2009,164 @@ function refreshTaskList() {
 }
 
 /* ================================================================
-   POLLING
+   POLLING — Variant G: Combined
    ================================================================ */
+var pollTickCounter = 0;
+var fullChatTimer = null;
+var taskRefreshTimer = null;
+
 function startPolling() {
   stopPolling();
   pollActive = true;
+  pollTickCounter = 0;
 
+  // Main tick: every 60 seconds — delta only for priority chats
   pollTimer = setInterval(function() {
     if (!pollActive) return;
+    pollTickCounter++;
     lastUpdateTime = new Date();
     setStatusTime();
-    deltaLoadChats().then(function(newCount) {
-      if (newCount > 0) setStatus('Новых сообщений: ' + newCount, false, false);
+
+    // Determine priority chats: tasks with mentions or overdue
+    deltaLoadPriorityChats().then(function(newCount) {
+      if (newCount > 0) {
+        setStatus('Новых: ' + newCount, false, false);
+      }
     });
-    if (Math.random() < 0.25) {
-      refreshTaskList();
-    }
-  }, 45000);
+  }, 60000);
+
+  // Full delta all chats: every 5 minutes
+  fullChatTimer = setInterval(function() {
+    if (!pollActive) return;
+    deltaLoadChats().then(function(newCount) {
+      if (newCount > 0) renderAll();
+    });
+  }, 300000);
+
+  // Task list refresh: every 10 minutes
+  taskRefreshTimer = setInterval(function() {
+    if (!pollActive) return;
+    refreshTaskList();
+  }, 600000);
 }
 
 function stopPolling() {
   pollActive = false;
   if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  if (fullChatTimer) { clearInterval(fullChatTimer); fullChatTimer = null; }
+  if (taskRefreshTimer) { clearInterval(taskRefreshTimer); taskRefreshTimer = null; }
+}
+
+function deltaLoadPriorityChats() {
+  // Only chats of tasks with mentions or overdue tasks
+  var mentionTaskIds = {};
+  allMentions.forEach(function(m) { mentionTaskIds[m.taskId] = true; });
+  var priorityTasks = activeTasks.filter(function(t) {
+    var tid = t.id || t.ID;
+    return mentionTaskIds[tid] || isOverdue(t);
+  });
+
+  if (!priorityTasks.length) return Promise.resolve(0);
+
+  var trackedChats = {};
+  priorityTasks.forEach(function(t) {
+    var tid = t.id || t.ID;
+    var msgs = taskChatCache[tid];
+    if (!msgs || !msgs.length) return;
+    var chatId = msgs[0].chat_id;
+    if (!chatId) return;
+    trackedChats[chatId] = tid;
+  });
+
+  var chatIds = Object.keys(trackedChats);
+  if (!chatIds.length) return Promise.resolve(0);
+
+  var mentionTag = new RegExp('\\[USER=' + MY_ID + '\\]', 'gi');
+  var newMentionCount = 0;
+  var batchIdx = 0;
+
+  function processBatch() {
+    var ids = chatIds.slice(batchIdx, batchIdx + 3);
+    if (!ids.length) return Promise.resolve(newMentionCount);
+    batchIdx += 3;
+
+    var promises = ids.map(function(chatId) {
+      var tid = trackedChats[chatId];
+      var lastId = lastMsgId[chatId];
+      if (!lastId) return Promise.resolve(0);
+
+      return bxPost('im.dialog.messages.get', {
+        DIALOG_ID: 'chat' + chatId,
+        LAST_MESSAGE_ID: lastId,
+        LIMIT: 50
+      }).then(function(r) {
+        if (r.error || !r || !r.result) return 0;
+        var msgs = r.result.messages;
+        if (!msgs || !Array.isArray(msgs)) return 0;
+
+        if (r.result.users) {
+          var users = Array.isArray(r.result.users) ? r.result.users : [];
+          users.forEach(function(u) {
+            if (u && u.id) {
+              userCache[String(u.id)] = {
+                name: u.name || ('#' + u.id),
+                color: u.color || '#5a6070',
+                avatar: u.avatar || ''
+              };
+            }
+          });
+        }
+
+        var newMsgs = msgs.filter(function(m) { return Number(m.id) > lastId; });
+        if (!newMsgs.length) return 0;
+
+        taskChatCache[tid] = (taskChatCache[tid] || []).concat(newMsgs);
+        newMsgs.forEach(function(m) {
+          var mid = Number(m.id);
+          if (mid > lastMsgId[chatId]) lastMsgId[chatId] = mid;
+        });
+
+        newMsgs.forEach(function(m) {
+          var mText = m.text || '';
+          if (!mText || !mentionTag.test(mText)) return;
+          mentionTag.lastIndex = 0;
+          var mKey = 'chat_' + tid + '_' + m.id;
+          for (var i = 0; i < allMentions.length; i++) { if (allMentions[i].key === mKey) return; }
+          var cleanText = mText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+          cleanText = cleanText.replace(mentionTag, '<span class="mention-highlight">@' + esc(NAMES[MY_ID] || '#' + MY_ID) + '</span>');
+          var fromId = m.author_id || m.from_id || m.authorId || 0;
+          var fromName = NAMES[String(fromId)] || ('#' + fromId);
+          var task = findTask(tid);
+          var taskTitle = task ? 'Чат: ' + (task.title || task.TITLE) : 'Чат';
+          allMentions.unshift({
+            type: 'chat', taskId: tid, chatId: Number(chatId),
+            title: taskTitle, fromName: fromName, fromId: String(fromId),
+            text: truncate(cleanText, 200),
+            date: (m.date || '').substring(0, 16).replace('T', ' '),
+            key: mKey
+          });
+          newMentionCount++;
+        });
+        return newMsgs.length;
+      }).catch(function(e) {
+        console.warn('[delta-priority] chat', chatId, 'error:', e.message);
+        return 0;
+      });
+    });
+
+    return Promise.all(promises).then(function() { return processBatch(); });
+  }
+
+  return processBatch().then(function(total) {
+    if (newMentionCount > 0) {
+      allMentions.slice(0, newMentionCount).forEach(function(m) {
+        sendNotification(m);
+      });
+      playBeep();
+      renderAll();
+    }
+    return total;
+  });
 }
 
 /* ================================================================
@@ -1984,6 +2294,7 @@ function showSkeleton() {
    ================================================================ */
 function setActiveNav(nav) {
   activeNav = nav;
+  activeEmployee = null;
   activeFilter = null;
   document.querySelectorAll('.nav-item').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('data-nav') === nav);
@@ -1995,6 +2306,7 @@ function setActiveNav(nav) {
 }
 
 function setFilter(filter) {
+  activeEmployee = null;
   if (activeFilter === filter) {
     activeFilter = null;
   } else {
@@ -2040,6 +2352,14 @@ function getFilteredTasks() {
     var mtIds = {};
     allMentions.forEach(function(m) { mtIds[m.taskId] = true; });
     tasks = tasks.filter(function(t) { return mtIds[t.id || t.ID]; });
+  }
+
+  // Employee filter
+  if (activeEmployee) {
+    tasks = tasks.filter(function(t) {
+      var rid = t.responsibleId || t.RESPONSIBLE_ID;
+      return Number(rid) === Number(activeEmployee);
+    });
   }
 
   return tasks;
@@ -2093,6 +2413,7 @@ function renderAll() {
   renderTimeline();
   renderKPIs();
   renderBadges();
+  renderEmployees();
 }
 
 function renderTimeline() {
@@ -2115,6 +2436,11 @@ function renderTimeline() {
     document.getElementById('contentTitle').textContent = labels[activeFilter] || 'Задачи';
   } else {
     document.getElementById('contentTitle').textContent = 'Задачи по дедлайнам';
+  }
+
+  if (activeEmployee) {
+    var empName = NAMES[String(activeEmployee)] || ('#' + activeEmployee);
+    document.getElementById('contentTitle').textContent = empName + ' — задачи';
   }
 
   if (!totalTasks) {
@@ -2366,6 +2692,7 @@ function closeChat() {
   currentChatTaskId = null;
   document.getElementById('chatInputBar').style.display = 'none';
   document.getElementById('chatInput').value = '';
+  clearReplyQuote();
   document.getElementById('chatPanel').style.display = 'none';
 }
 
@@ -2434,6 +2761,8 @@ function renderChatMessages(msgs) {
       }
     }
 
+    var replyBtn = '<button class="reply-btn" onclick="event.stopPropagation();setReplyTo(' + (m.id || m.ID) + ',\'' + esc(userName).replace(/'/g, "\\'") + '\',\'' + esc(displayText).replace(/'/g, "\\'").substring(0, 80) + '\')" title="Ответить">\u21A9</button>';
+
     html += '<div class="chat-msg' + (isSelf ? ' self' : '') + '">' +
       '<div class="chat-msg-avatar" style="background:' + userColor + '">' + esc(userLetter) + '</div>' +
       '<div class="chat-msg-body">' +
@@ -2442,6 +2771,7 @@ function renderChatMessages(msgs) {
       '<span class="chat-msg-time">' + esc(timeStr) + '</span>' +
       '</div>' +
       '<div class="chat-msg-bubble' + (hasMention ? ' mention-bubble' : '') + '">' +
+      replyBtn +
       (displayText ? esc(displayText) : '') +
       attachHtml +
       '</div></div></div>';
@@ -2456,6 +2786,29 @@ function renderChatMessages(msgs) {
       mentionBubble.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, 300);
+}
+
+/* ================================================================
+   CHAT REPLY TO MESSAGE
+   ================================================================ */
+function setReplyTo(msgId, authorName, quoteText) {
+  replyToMsgId = msgId;
+  replyToText = quoteText || '';
+  var area = document.getElementById('replyQuoteArea');
+  if (area) {
+    area.innerHTML = '<div class="reply-quote">' +
+      '<span class="reply-quote-text">\u21A9 ' + esc(authorName) + ': ' + esc(replyToText) + '</span>' +
+      '<button class="reply-quote-close" onclick="clearReplyQuote()">&times;</button>' +
+      '</div>';
+  }
+  document.getElementById('chatInput').focus();
+}
+
+function clearReplyQuote() {
+  replyToMsgId = null;
+  replyToText = '';
+  var area = document.getElementById('replyQuoteArea');
+  if (area) area.innerHTML = '';
 }
 
 /* ================================================================
@@ -2478,10 +2831,15 @@ function sendChatMessage() {
   btn.classList.add('sending');
   btn.disabled = true;
 
-  bxPost('im.message.add', {
+  var params = {
     DIALOG_ID: 'chat' + chatId,
     MESSAGE: text
-  }).then(function(r) {
+  };
+  if (replyToMsgId) {
+    params.REPLY_TO = replyToMsgId;
+  }
+
+  bxPost('im.message.add', params).then(function(r) {
     btn.classList.remove('sending');
     btn.disabled = false;
     if (r.error) {
@@ -2490,6 +2848,7 @@ function sendChatMessage() {
     }
     input.value = '';
     input.style.height = 'auto';
+    clearReplyQuote();
     // Refresh chat
     if (taskChatCache[currentChatTaskId]) {
       var newMsg = {
@@ -2557,6 +2916,58 @@ function formatDescription(desc) {
     .replace(/\n{3,}/g, '\n\n')
     .trim();
   return esc(clean).replace(/\n/g, '<br>');
+}
+
+/* ================================================================
+   EMPLOYEE FILTER
+   ================================================================ */
+function renderEmployees() {
+  var el = document.getElementById('employeeList');
+  if (!el) return;
+
+  // Build employee list: EMP_IDS + MY_ID if not in list
+  var allIds = EMP_IDS.slice();
+  if (MY_ID && allIds.indexOf(Number(MY_ID)) === -1) allIds.push(Number(MY_ID));
+
+  var html = '';
+  allIds.forEach(function(uid) {
+    var name = NAMES[String(uid)] || ('#' + uid);
+    var color = getUserColor(String(uid));
+    var letter = name.charAt(0).toUpperCase();
+    var isActive = (activeEmployee === uid);
+    // Count active tasks for this employee
+    var taskCount = activeTasks.filter(function(t) {
+      var rid = t.responsibleId || t.RESPONSIBLE_ID;
+      return Number(rid) === Number(uid) && !isTaskComplete(t);
+    }).length;
+
+    html += '<div class="emp-item' + (isActive ? ' active' : '') + '" onclick="setEmployeeFilter(' + uid + ')">' +
+      '<div class="emp-avatar-sm" style="background:' + color + '">' + esc(letter) + '</div>' +
+      '<span class="emp-name">' + esc(name) + '</span>' +
+      '<span class="emp-task-count">' + taskCount + '</span>' +
+      '</div>';
+  });
+
+  el.innerHTML = html;
+}
+
+function setEmployeeFilter(uid) {
+  if (activeEmployee === uid) {
+    activeEmployee = null;
+  } else {
+    activeEmployee = uid;
+  }
+  // Reset nav/filter
+  activeNav = 'all';
+  activeFilter = null;
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('data-nav') === 'all');
+  });
+  document.querySelectorAll('.filter-item').forEach(function(el) {
+    el.classList.remove('active');
+  });
+  renderAll();
+  renderEmployees();
 }
 
 /* ================================================================
