@@ -109,8 +109,8 @@
   }
   .stat-badge:hover { filter: brightness(1.1); }
   .stat-badge.red {
-    background: rgba(255,79,106,0.15);
-    color: #ff4f6a;
+    background: rgba(255,107,127,0.18);
+    color: #ff8a9a;
   }
   .stat-badge.purple {
     background: rgba(124,92,252,0.15);
@@ -122,7 +122,7 @@
     border-radius: 50%;
     animation: pulse 1.5s ease-in-out infinite;
   }
-  .stat-badge.red .dot { background: #ff4f6a; }
+  .stat-badge.red .dot { background: #ff8a9a; }
   .stat-badge.purple .dot { background: #7c5cfc; }
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
@@ -256,7 +256,7 @@
     flex-shrink: 0;
     line-height: 1;
   }
-  .nav-badge.red { background: #ff4f6a; color: #fff; }
+  .nav-badge.red { background: #ff6b7f; color: #fff; }
   .nav-badge.purple { background: #7c5cfc; color: #fff; }
 
   /* — Separator — */
@@ -298,7 +298,7 @@
     border-radius: 50%;
     flex-shrink: 0;
   }
-  .filter-dot.red { background: #ff4f6a; }
+  .filter-dot.red { background: #ff6b7f; }
   .filter-dot.orange { background: #ff8c42; }
   .filter-dot.green { background: #22d47e; }
   .filter-dot.yellow { background: #f5a623; }
@@ -334,7 +334,7 @@
   .kpi-icon { font-size: 11px; opacity: 0.6; }
   .kpi-value { font-weight: 700; font-size: 13px; }
   .kpi-value.white { color: #ffffff; }
-  .kpi-value.red { color: #ff4f6a; }
+  .kpi-value.red { color: #ff6b7f; }
   .kpi-value.purple { color: #7c5cfc; }
 
   /* ================================================================
@@ -418,6 +418,13 @@
   /* — Timeline group — */
   .timeline-group {
     border-bottom: 1px solid #EDEEF0;
+    margin-bottom: 0;
+  }
+  .timeline-group + .timeline-group {
+    margin-top: 6px;
+  }
+  .timeline-group + .timeline-group .group-header {
+    border-top: 2px solid #E8E8E8;
   }
   .timeline-group:last-child { border-bottom: none; }
 
@@ -459,17 +466,17 @@
 
   /* Red group — ПРОСРОЧЕНЫ */
   .group-header.red {
-    background: rgba(255,79,106,0.04);
-    color: #ff4f6a;
+    background: rgba(255,107,127,0.06);
+    color: #ff6b7f;
     border-bottom: 1px solid rgba(255,79,106,0.08);
   }
-  .group-header.red .group-accent { background: #ff4f6a; }
+  .group-header.red .group-accent { background: #ff6b7f; }
   .group-header.red .group-date { color: #c9808a; }
-  .group-header.red .group-count { background: rgba(255,79,106,0.1); color: #ff4f6a; }
+  .group-header.red .group-count { background: rgba(255,107,127,0.12); color: #ff6b7f; }
 
   /* Yellow group — СКОРО */
   .group-header.yellow {
-    background: rgba(245,166,35,0.04);
+    background: rgba(245,166,35,0.06);
     color: #c48820;
     border-bottom: 1px solid rgba(245,166,35,0.08);
   }
@@ -479,7 +486,7 @@
 
   /* Green group — ЭТА НЕДЕЛЯ */
   .group-header.green {
-    background: rgba(34,212,126,0.04);
+    background: rgba(34,212,126,0.06);
     color: #1a9a5c;
     border-bottom: 1px solid rgba(34,212,126,0.08);
   }
@@ -519,7 +526,7 @@
   }
 
   /* Colored left border per deadline group */
-  .task-card.border-red { border-left-color: #ff4f6a; }
+  .task-card.border-red { border-left-color: #ff6b7f; }
   .task-card.border-yellow { border-left-color: #f5a623; }
   .task-card.border-green { border-left-color: #22d47e; }
   .task-card.border-gray { border-left-color: #b0b4bc; }
@@ -576,7 +583,7 @@
     font-weight: 500;
   }
   .task-deadline { color: #888888; }
-  .task-deadline.over { color: #ff4f6a; font-weight: 600; }
+  .task-deadline.over { color: #e8453a; font-weight: 600; }
   .meta-sep { color: #ddd; font-size: 10px; }
 
   /* Status dot indicator */
@@ -619,8 +626,8 @@
     color: #00abe6;
   }
   .indicator.mention {
-    background: #ffff4c;
-    color: #424a00;
+    background: rgba(255,224,102,0.9);
+    color: #3d3800;
   }
   .indicator:hover { filter: brightness(0.95); }
 
@@ -654,7 +661,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    width: 340px;
+    width: 440px;
     background: rgba(30,34,48,0.88);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -719,8 +726,8 @@
     transition: all 0.15s;
   }
   .chat-close:hover {
-    background: rgba(255,79,106,0.2);
-    color: #ff4f6a;
+    background: rgba(255,107,127,0.2);
+    color: #ff8a9a;
   }
 
   /* Chat messages area */
@@ -938,7 +945,7 @@
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
-  .status-bar.error { color: #ff4f6a; background: rgba(255,79,106,0.04); }
+  .status-bar.error { color: #ff6b7f; background: rgba(255,79,106,0.04); }
 
   /* ================================================================
      SKELETON LOADING
@@ -1075,6 +1082,179 @@
   }
   .mbtn.primary:hover { background: #2a9a84; }
 
+  /* API counter */
+  .api-counter {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    color: #22d47e;
+    opacity: 0.55;
+    margin-left: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Chat input bar */
+  .chat-input-bar {
+    padding: 10px 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+    background: rgba(20,23,32,0.5);
+  }
+  .chat-input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #d8dce4;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    resize: none;
+    outline: none;
+    min-height: 36px;
+    max-height: 80px;
+    line-height: 1.4;
+    transition: border-color 0.15s;
+  }
+  .chat-input:focus {
+    border-color: rgba(40,136,116,0.5);
+  }
+  .chat-input::placeholder {
+    color: #555c6a;
+  }
+  .chat-send-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: #288874;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .chat-send-btn:hover {
+    background: #2a9a84;
+    box-shadow: 0 2px 8px rgba(40,136,116,0.3);
+  }
+  .chat-send-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .chat-send-btn .send-spinner {
+    width: 14px; height: 14px;
+    border: 2px solid transparent;
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .chat-send-btn.sending .send-icon { display: none; }
+  .chat-send-btn.sending .send-spinner { display: block; }
+  .chat-error-toast {
+    position: absolute;
+    bottom: 60px;
+    left: 14px;
+    right: 14px;
+    background: rgba(255,79,106,0.15);
+    border: 1px solid rgba(255,79,106,0.3);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: #ff6b7f;
+    z-index: 5;
+    animation: fadeInUp 0.2s ease;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Task open button */
+  .task-open-btn, .chat-task-open-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    color: #8e949e;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .task-open-btn:hover, .chat-task-open-btn:hover {
+    background: rgba(0,171,230,0.15);
+    color: #00abe6;
+    border-color: rgba(0,171,230,0.3);
+  }
+
+  /* Task description expand */
+  .task-expand-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    color: #00abe6;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: none;
+    background: rgba(0,171,230,0.08);
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.15s;
+    margin-top: 4px;
+  }
+  .task-expand-btn:hover {
+    background: rgba(0,171,230,0.15);
+    color: #0090c8;
+  }
+  .task-expand-btn .expand-arrow {
+    font-size: 8px;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .task-expand-btn.open .expand-arrow {
+    transform: rotate(90deg);
+  }
+  .task-desc-block {
+    display: none;
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: #f5f6f7;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+    border-left: 3px solid #EDEEF0;
+    max-height: 200px;
+    overflow-y: auto;
+    word-break: break-word;
+  }
+  .task-desc-block.show {
+    display: block;
+    animation: slideDown 0.2s ease;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; max-height: 0; }
+    to { opacity: 1; max-height: 200px; }
+  }
+  .task-desc-block a {
+    color: #00abe6;
+    text-decoration: underline;
+  }
+
   /* ================================================================
      RESPONSIVE
      ================================================================ */
@@ -1084,7 +1264,7 @@
     .brand-sep, .brand-sub, .header-stats { display: none; }
     .nav-item { padding: 9px 0; justify-content: center; }
     .nav-item.active { border-left-color: transparent; }
-    .chat-panel { width: 280px; }
+    .chat-panel { width: 320px; }
   }
 </style>
 </head>
@@ -1236,6 +1416,13 @@
       <div class="chat-messages" id="chatMessages">
         <div class="chat-loading"><div class="ring"></div> Загрузка...</div>
       </div>
+      <div class="chat-input-bar" id="chatInputBar" style="display:none">
+        <textarea class="chat-input" id="chatInput" placeholder="Введите сообщение..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+        <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">
+          <span class="send-icon">➤</span>
+          <span class="send-spinner"></span>
+        </button>
+      </div>
     </div>
 
   </div>
@@ -1248,7 +1435,7 @@
     </div>
     <div class="status-right">
       <span class="status-sep">|</span>
-      <span id="statusRight">Дакар &middot; Bitrix24</span>
+      <span id="statusRight">Дакар &middot; Bitrix24</span><span class="api-counter" id="apiCounter"></span>
     </div>
   </div>
 </div>
@@ -1303,6 +1490,9 @@ var pollTimer = null;
 var pollActive = false;
 var lastUpdateTime = null;
 var PERIOD_DAYS = 30;
+var apiCallCount = 0;
+var apiCallRate = 0;
+var apiRateTimer = null;
 
 /* ================================================================
    INIT
@@ -1369,7 +1559,7 @@ function setStatus(msg, loading, isError) {
   leftHtml += esc(msg);
   document.getElementById('statusBar').innerHTML =
     '<div class="status-left">' + leftHtml + '</div>' +
-    '<div class="status-right"><span class="status-sep">|</span><span>Дакар · Bitrix24</span></div>';
+    '<div class="status-right"><span class="status-sep">|</span><span>Дакар · Bitrix24</span><span class="api-counter" id="apiCounter">' + apiCallCount + ' req · ' + apiCallRate + '/min</span></div>';
 }
 function setStatusTime() {
   if (!lastUpdateTime) return;
@@ -1384,6 +1574,8 @@ function setStatusTime() {
    ================================================================ */
 function bxPost(method, body) {
   if (!HOOK) return Promise.resolve({ error: 'Вебхук не настроен' });
+  apiCallCount++;
+  updateApiCounter();
   var url = '/api/' + method + '?hook=' + encodeURIComponent(HOOK.trim());
   return fetch(url, {
     method: 'POST',
@@ -1397,6 +1589,20 @@ function bxPost(method, body) {
   .catch(function(e) { return { error: e.message }; });
 }
 
+function updateApiCounter() {
+  var el = document.getElementById('apiCounter');
+  if (el) el.textContent = apiCallCount + ' req · ' + apiCallRate + '/min';
+}
+
+function startApiRateTracker() {
+  if (apiRateTimer) clearInterval(apiRateTimer);
+  apiRateTimer = setInterval(function() {
+    apiCallRate = apiCallCount;
+    apiCallCount = 0;
+    updateApiCounter();
+  }, 60000);
+}
+
 function fetchTasksPaginated(filterObj, selectArr) {
   var all = [], start = 0;
   function step() {
@@ -1404,6 +1610,15 @@ function fetchTasksPaginated(filterObj, selectArr) {
     return bxPost('tasks.task.list', params).then(function(r) {
       if (r.error) { console.warn('[tasks] error:', r.error); return all; }
       var tasks = (r && r.result && r.result.tasks) || [];
+      tasks.forEach(function(t) {
+        if (t.description !== undefined) t.DESCRIPTION = t.description;
+        if (t.chatId !== undefined) t.CHAT_ID = t.chatId;
+        if (t.responsibleId !== undefined) t.RESPONSIBLE_ID = t.responsibleId;
+        if (t.deadline !== undefined) t.DEADLINE = t.deadline;
+        if (t.title !== undefined) t.TITLE = t.title;
+        if (t.status !== undefined) t.STATUS = t.status;
+        if (t.id !== undefined) t.ID = t.id;
+      });
       all = all.concat(tasks);
       if (r && r.next && tasks.length >= 50) { start = r.next; return step(); }
       return all;
@@ -1736,6 +1951,7 @@ function loadData() {
     btn.disabled = false;
     renderAll();
     setStatusTime();
+    startApiRateTracker();
     startPolling();
     requestNotificationPermission();
   })
@@ -1909,6 +2125,8 @@ function renderTimeline() {
   var html = '';
   var mentionTag = new RegExp('\\[USER=' + MY_ID + '\\]', 'gi');
 
+  var base = HOOK ? HOOK.split('/rest/')[0] : '';
+
   groups.forEach(function(group) {
     var countLabel = pluralize(group.tasks.length, 'задача', 'задачи', 'задач');
     var dateStr = '';
@@ -1924,7 +2142,7 @@ function renderTimeline() {
       dateStr = '— после 7 дней';
     }
 
-    html += '<div class="timeline-group">' +
+    html += '<div class="timeline-group" data-group="' + group.cssClass + '">' +
       '<div class="group-header ' + group.cssClass + '">' +
       '<div class="group-accent"></div>' +
       '<span class="group-emoji">' + group.emoji + '</span>' +
@@ -1989,11 +2207,14 @@ function renderTimeline() {
         '<span class="status-dot-inline"><span class="sdot" style="background:' + stageColor + '"></span>' + esc(stageName) + '</span>' +
         '</div>' +
         (mentionPreview ? '<div class="mention-preview">' + mentionPreview + '</div>' : '') +
+        '<button class="task-expand-btn" onclick="event.stopPropagation();toggleTaskDesc(' + tid + ',this)"><span class="expand-arrow">\u25B6</span> подробнее</button>' +
+        '<div class="task-desc-block" id="taskDesc_' + tid + '">' + formatDescription(t.description || t.DESCRIPTION || '') + '</div>' +
         '</div>' +
         '<div class="task-indicators">' +
         (chatCount > 0 ? '<span class="indicator chat">\uD83D\uDCAC ' + chatCount + ' сообщ</span>' : '') +
         (mentionCount > 0 ? '<span class="indicator mention">\u26A1 ' + mentionCount + '</span>' : '') +
         '</div>' +
+        '<a class="task-open-btn" href="' + esc(base) + '/company/personal/user/' + MY_ID + '/tasks/task/view/' + tid + '/" target="_blank" title="Открыть в Bitrix24" onclick="event.stopPropagation()">\u2197</a>' +
         '</div>';
     });
 
@@ -2088,12 +2309,17 @@ function openChat(taskId) {
     '<span class="emp" style="color:' + stage.color + '">' + esc(stage.name) + '</span>' +
     (dl ? '<span class="meta-dot">&middot;</span><span style="color:' + (od ? '#ff4f6a' : '') + '">дедлайн: ' + esc(formatDate(dl)) + '</span>' : '') +
     '<span class="meta-dot">&middot;</span>' +
-    '<a class="chat-link" href="' + esc(base) + '/company/personal/user/' + MY_ID + '/tasks/task/view/' + tid + '/" target="_blank">\u2197 Bitrix24</a>';
+    '<a class="chat-task-open-btn" href="' + esc(base) + '/company/personal/user/' + MY_ID + '/tasks/task/view/' + tid + '/" target="_blank" title="Открыть задачу в Bitrix24">\u2197</a>';
 
   document.getElementById('chatPanel').style.display = 'flex';
+  document.getElementById('chatInputBar').style.display = chatId ? 'flex' : 'none';
+  if (chatId) {
+    setTimeout(function() { document.getElementById('chatInput').focus(); }, 100);
+  }
   var msgArea = document.getElementById('chatMessages');
 
   if (!chatId) {
+    document.getElementById('chatInputBar').style.display = 'none';
     msgArea.innerHTML = '<div class="chat-empty"><div style="font-size:28px;opacity:0.3;margin-bottom:8px">\uD83D\uDCCB</div>' +
       '<div style="font-weight:600;color:#b0b5c0">Чат не привязан</div></div>';
     return;
@@ -2138,6 +2364,8 @@ function openChat(taskId) {
 
 function closeChat() {
   currentChatTaskId = null;
+  document.getElementById('chatInputBar').style.display = 'none';
+  document.getElementById('chatInput').value = '';
   document.getElementById('chatPanel').style.display = 'none';
 }
 
@@ -2228,6 +2456,107 @@ function renderChatMessages(msgs) {
       mentionBubble.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, 300);
+}
+
+/* ================================================================
+   CHAT REPLY
+   ================================================================ */
+function sendChatMessage() {
+  var input = document.getElementById('chatInput');
+  var btn = document.getElementById('chatSendBtn');
+  var text = (input.value || '').trim();
+  if (!text || !currentChatTaskId) return;
+
+  var task = findTask(currentChatTaskId);
+  if (!task) return;
+  var chatId = task.chatId || task.CHAT_ID;
+  if (!chatId) {
+    showChatError('У этой задачи нет чата');
+    return;
+  }
+
+  btn.classList.add('sending');
+  btn.disabled = true;
+
+  bxPost('im.message.add', {
+    DIALOG_ID: 'chat' + chatId,
+    MESSAGE: text
+  }).then(function(r) {
+    btn.classList.remove('sending');
+    btn.disabled = false;
+    if (r.error) {
+      showChatError('Ошибка: ' + (r.error_description || r.error));
+      return;
+    }
+    input.value = '';
+    input.style.height = 'auto';
+    // Refresh chat
+    if (taskChatCache[currentChatTaskId]) {
+      var newMsg = {
+        id: r.result,
+        author_id: Number(MY_ID),
+        text: text,
+        date: new Date().toISOString().replace('Z',''),
+        chat_id: chatId
+      };
+      taskChatCache[currentChatTaskId].push(newMsg);
+      var cId = String(chatId);
+      if (!lastMsgId[cId] || Number(r.result) > lastMsgId[cId]) {
+        lastMsgId[cId] = Number(r.result);
+      }
+      renderChatMessages(taskChatCache[currentChatTaskId]);
+    }
+  }).catch(function(e) {
+    btn.classList.remove('sending');
+    btn.disabled = false;
+    showChatError('Сеть: ' + e.message);
+  });
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+}
+
+function showChatError(msg) {
+  var panel = document.getElementById('chatPanel');
+  var existing = panel.querySelector('.chat-error-toast');
+  if (existing) existing.remove();
+  var toast = document.createElement('div');
+  toast.className = 'chat-error-toast';
+  toast.textContent = msg;
+  panel.appendChild(toast);
+  setTimeout(function() { if (toast.parentNode) toast.remove(); }, 3500);
+}
+
+function toggleTaskDesc(tid, btn) {
+  var block = document.getElementById('taskDesc_' + tid);
+  if (!block) return;
+  var isOpen = block.classList.toggle('show');
+  btn.classList.toggle('open', isOpen);
+  btn.innerHTML = '<span class="expand-arrow">\u25B6</span> ' + (isOpen ? 'свернуть' : 'подробнее');
+}
+
+function formatDescription(desc) {
+  if (!desc) return '<span style="color:#aaa;font-style:italic">Нет описания</span>';
+  // Clean HTML but keep basic formatting
+  var clean = desc
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<li>/gi, ' • ')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+  return esc(clean).replace(/\n/g, '<br>');
 }
 
 /* ================================================================
@@ -2347,3 +2676,4 @@ renderAll();
 </script>
 </body>
 </html>
+
