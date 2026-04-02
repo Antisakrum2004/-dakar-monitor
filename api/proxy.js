@@ -1,9 +1,7 @@
 /**
  * Vercel Serverless Function — прокси к Bitrix24 REST API
- * Файл: api/proxy.js
  */
 export default async function handler(req, res) {
-  // CORS preflight
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -16,10 +14,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Параметр hook обязателен' });
   }
 
-  // URL: /api/tasks.task.list → method = tasks.task.list
   const urlParts = req.url.split('/api/')[1]?.split('?')[0] || '';
   const method = urlParts;
-
   const apiUrl = hook + '/' + method + '.json';
 
   try {

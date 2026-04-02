@@ -32,6 +32,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
 .kpi.orange::before{background:var(--orange)}.kpi.green::before{background:var(--green)}.kpi.red::before{background:var(--red)}.kpi.cyan::before{background:var(--cyan)}.kpi.purple::before{background:var(--purple)}
 .kpi-val{font-family:var(--mono);font-size:28px;font-weight:700;line-height:1}
+.kpi-sub{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent);margin-left:4px}
 .kpi-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
 .kpi.hint{font-size:10px;color:var(--text3);margin-top:2px}
 
@@ -72,7 +73,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .task-meta .deadline{color:var(--text3)}
 .task-meta .deadline.over{color:var(--red)}
 
-/* Drill panel — right sidebar */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none}.ov.show{display:block}
 .dpanel{position:fixed;right:0;top:0;bottom:0;width:520px;background:rgba(13,16,24,.92);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-left:1px solid var(--glass-border);z-index:200;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column}
 .dpanel.open{transform:translateX(0)}
@@ -97,17 +97,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .ddesc{font-size:13px;color:var(--text2);line-height:1.6;word-break:break-word}
 .ddesc a{color:var(--accent)}
 .ddesc img{max-width:100%;border-radius:6px;margin:8px 0}
+.derror{font-size:12px;color:var(--red);padding:8px 0;line-height:1.5}
+.derror code{background:rgba(255,79,106,.1);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:11px}
 
-.cmt{padding:14px 22px;border-bottom:1px solid var(--glass-border)}
-.cmt-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.cmt-author{font-size:13px;font-weight:600;color:var(--text)}
+.cmt{padding:10px 22px;border-bottom:1px solid var(--glass-border)}
+.cmt-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.cmt-author{font-size:12px;font-weight:600;color:var(--text)}
 .cmt-time{font-family:var(--mono);font-size:10px;color:var(--text3)}
 .cmt-text{font-size:13px;color:var(--text2);line-height:1.5;word-break:break-word}
 .cmt-text mark{background:rgba(0,212,255,.2);color:var(--accent);border-radius:2px;padding:0 2px}
 .cmt.is-new{background:rgba(34,212,126,.04)}
 .cmt.highlight{background:rgba(0,212,255,.06);border-left:3px solid var(--accent)}
+.cmt-sys{font-size:11px;color:var(--text3);font-style:italic;padding:6px 22px;border-bottom:1px solid var(--glass-border)}
 
-/* Config modal */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .modal-ov.show{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--glass-border);border-radius:14px;width:520px;max-width:94vw;max-height:85vh;overflow-y:auto;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.5)}
@@ -137,6 +139,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .status-bar{padding:8px 20px;border-bottom:1px solid var(--glass-border);font-family:var(--mono);font-size:10px;color:var(--text3);display:flex;align-items:center;gap:8px;flex-shrink:0}
 .status-bar .sloader{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.status-bar.error{color:var(--red);background:rgba(255,79,106,.06)}
+.status-bar.warn{color:var(--yellow)}
 </style>
 </head>
 <body>
@@ -157,7 +161,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="kpi cyan" onclick="filterTasks('all',document.querySelector('[data-tf=all]'))"><div class="kpi-val" id="kpiTotal">-</div><div class="kpi-lbl">Активных задач</div><div class="hint">4 сотрудника</div></div>
   <div class="kpi orange" onclick="filterTasks('in-progress',document.querySelector('[data-tf=in-progress]'))"><div class="kpi-val" id="kpiInWork">-</div><div class="kpi-lbl">В работе</div><div class="hint">статус «в работе»</div></div>
   <div class="kpi red" onclick="filterTasks('overdue',document.querySelector('[data-tf=overdue]'))"><div class="kpi-val" id="kpiOverdue">-</div><div class="kpi-lbl">Просрочено</div><div class="hint">прошли дедлайны</div></div>
-  <div class="kpi purple" onclick="filterMentions('all',document.querySelector('[data-mf=all]'))"><div class="kpi-val" id="kpiMentions">-</div><div class="kpi-lbl">Упоминания</div><div class="kpi-new" id="kpiMentionsNew"></div></div>
+  <div class="kpi purple" onclick="filterMentions('all',document.querySelector('[data-mf=all]'))"><div class="kpi-val" id="kpiMentions">-</div><div class="kpi-lbl">Упоминания</div><span class="kpi-sub" id="kpiMentionsNew" style="display:none"></span></div>
   <div class="kpi green" onclick="openClosedDrill()"><div class="kpi-val" id="kpiDone">-</div><div class="kpi-lbl">Закрыто за 30д</div><div class="hint">завершённые</div></div>
 </div>
 
@@ -172,7 +176,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="fchip active" data-mf="all">Все</div>
       <div class="fchip" data-mf="new">Новые</div>
       <div class="fchip" data-mf="task">Задачи</div>
-      <div class="fchip" data-mf="chat">Чаты</div>
+      <div class="fchip" data-mf="chat">Чаты задач</div>
       <div class="fchip" data-mf="read">Прочитанные</div>
     </div>
     <div class="section-body" id="mentionsBox"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">Нажмите «Загрузить»</div></div></div>
@@ -199,7 +203,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="dcls" onclick="closeDrill()">✕</div>
   </div>
   <div class="dmeta" id="dpMeta"></div>
-  <div class="dbody" id="dpBody"><div class="empty"><div class="empty-text">Загрузка...</div></div></div>
+  <div class="dbody" id="dpBody"><div class="empty"><div class="empty-text">Выберите задачу</div></div></div>
 </div>
 
 <div class="modal-ov" id="configOv">
@@ -225,16 +229,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <script>
-var HOOK='https://dakar.bitrix24.ru/rest/103557/7vdwpqb1buur4j0x/',
+var HOOK='https://dakar.bitrix24.ru/rest/103557/r4nxtoa2kpm2iu5x/',
     MY_ID='103557',
     EMP_IDS=[101861,15378,68370,15394],
     PERIOD_DAYS=30,
     activeTasks=[],closedCount=0,allMentions=[],seenComments={},
     mentionFilter='all',taskFilter='all',panelOpen=false,
-    chatCache={};
+    taskChatCache={};
 var NAMES={'103557':'Предеин А.','101861':'Забиров Т.','15378':'Макаров В.','68370':'Соколовский А.','15394':'Приходько К.'};
 
-// === Config ===
 function loadConfig(){
   try{var h=localStorage.getItem('dk_hook');if(h)HOOK=h}catch(e){}
   try{var m=localStorage.getItem('dk_myid');if(m)MY_ID=m}catch(e){}
@@ -258,25 +261,29 @@ function openConfig(){
 function closeConfig(){document.getElementById('configOv').classList.remove('show')}
 document.getElementById('configOv').addEventListener('click',function(e){if(e.target===this)closeConfig()});
 
-// === Status ===
-function setStatus(msg,loading){
+function setStatus(msg,loading,isError,isWarn){
   var el=document.getElementById('statusBar');
+  el.className='status-bar'+(isError?' error':'')+(isWarn?' warn':'');
   el.innerHTML=(loading?'<div class="sloader"></div> ':'')+esc(msg);
 }
 
-// === API ===
 function bxPost(method,body){
-  if(!HOOK)return Promise.resolve(null);
+  if(!HOOK)return Promise.resolve({error:'Вебхук не настроен'});
   var u='/api/'+method+'?hook='+encodeURIComponent(HOOK.trim());
   return fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})})
-    .then(function(r){return r.json()})
+    .then(function(r){
+      if(!r.ok) return {error:'HTTP '+r.status};
+      return r.json();
+    })
     .catch(function(e){return{error:e.message}});
 }
+
 function fetchTasksPaginated(filterObj,selectArr){
   var all=[],start=0;
   function step(){
     return bxPost('tasks.task.list',{filter:filterObj,select:selectArr,start:start})
     .then(function(r){
+      if(r.error){console.warn('[tasks] error:',r.error);return all}
       var tasks=(r&&r.result&&r.result.tasks)||[];
       all=all.concat(tasks);
       if(r&&r.next&&tasks.length>=50){start=r.next;return step()}
@@ -286,53 +293,65 @@ function fetchTasksPaginated(filterObj,selectArr){
   return step();
 }
 
-// === Load Data ===
 function loadData(){
   if(!HOOK){openConfig();return}
   if(!MY_ID||!EMP_IDS.length){openConfig();return}
   var btn=document.getElementById('loadBtn');
   btn.disabled=true;btn.textContent='...';
-  activeTasks=[];closedCount=0;allMentions=[];chatCache={};
+  activeTasks=[];closedCount=0;allMentions=[];taskChatCache={};
 
   var dFrom=new Date();dFrom.setDate(dFrom.getDate()-PERIOD_DAYS);
   var dateFrom=dFrom.toISOString().substring(0,10);
   var allIds=EMP_IDS.slice();
   if(MY_ID&&allIds.indexOf(Number(MY_ID))===-1)allIds.push(Number(MY_ID));
 
-  var sel=['ID','TITLE','RESPONSIBLE_ID','STATUS','STAGE_ID','CREATED_DATE','CLOSED_DATE','DEADLINE','DESCRIPTION'];
-  setStatus('Загрузка задач и чатов...',true);
+  // CHAT_ID → im.dialog.messages.get (не im.message.list!)
+  var sel=['ID','TITLE','RESPONSIBLE_ID','STATUS','STAGE_ID','CREATED_DATE','CLOSED_DATE','DEADLINE','DESCRIPTION','CHAT_ID'];
 
-  Promise.all([
-    fetchTasksPaginated({'RESPONSIBLE_ID':allIds,'!STATUS':[5,6,7],'>=CREATED_DATE':dateFrom},sel),
-    bxPost('tasks.task.list',{filter:{'RESPONSIBLE_ID':allIds,'STATUS':5,'>=CLOSED_DATE':dateFrom},select:['ID']}),
-    bxPost('im.dialog.list',{})
-  ]).then(function(results){
-    var tasks=results[0]||[];
-    var closedR=results[1];
-    var dialogsR=results[2];
-    activeTasks=tasks;
-    closedCount=(closedR&&closedR.result&&closedR.result.tasks)?closedR.result.tasks.length:0;
+  setStatus('1/3 — Загрузка задач...',true);
 
-    // Task mentions from descriptions
-    extractTaskMentions(tasks);
+  fetchTasksPaginated({'RESPONSIBLE_ID':allIds,'!STATUS':[5,6,7],'>=CREATED_DATE':dateFrom},sel)
+  .then(function(tasks){
+    activeTasks=tasks||[];
+    console.log('[load] tasks:',activeTasks.length,'loaded. CHAT_ID sample:', activeTasks[0]?activeTasks[0].chatId||activeTasks[0].CHAT_ID:'none');
 
-    // Chat mentions
-    if(dialogsR&&!dialogsR.error&&dialogsR.result){
-      setStatus('Поиск упоминаний в чатах...',true);
-      return processChatMentions(dialogsR.result);
+    // Extract mentions from task descriptions
+    extractTaskMentions(activeTasks);
+
+    setStatus('2/3 — Загрузка чатов задач (im.dialog.messages.get)...',true);
+    return loadAllTaskChats(activeTasks);
+  })
+  .then(function(chatResults){
+    console.log('[load] task chats loaded:', chatResults);
+
+    setStatus('3/3 — Считаем закрытые...',true);
+    return bxPost('tasks.task.list',{filter:{'RESPONSIBLE_ID':allIds,'STATUS':5,'>=CLOSED_DATE':dateFrom},select:['ID']});
+  })
+  .then(function(closedR){
+    closedCount=(closedR&&!closedR.error&&closedR.result&&closedR.result.tasks)?closedR.result.tasks.length:0;
+
+    allMentions.sort(function(a,b){return (b.date||'').localeCompare(a.date||'')});
+    btn.disabled=false;btn.textContent='Загрузить';
+
+    var chatM=allMentions.filter(function(m){return m.type==='chat'}).length;
+    var taskM=allMentions.filter(function(m){return m.type==='task'}).length;
+    var parts=[activeTasks.length+' акт.', closedCount+' закр.', allMentions.length+' упом.'];
+
+    if(chatM===0&&activeTasks.length>0){
+      setStatus(parts.join(', ')+' — чаты задач не загружены (нужен im в вебхуке)',false,false,true);
+    } else {
+      setStatus('Готово: '+parts.join(', '),false);
     }
-    return Promise.resolve();
-  }).then(function(){
-    btn.disabled=false;btn.textContent='Загрузить';
-    setStatus('Загружено: '+activeTasks.length+' активных, '+closedCount+' закрытых, '+allMentions.length+' упоминаний',false);
     renderAll();
-  }).catch(function(e){
+  })
+  .catch(function(e){
     btn.disabled=false;btn.textContent='Загрузить';
-    setStatus('Ошибка: '+e.message,false);
+    setStatus('Ошибка: '+e.message,true,true);
+    console.error('[loadData] fatal:',e);
   });
 }
 
-// === Task Mentions ===
+// --- Упоминания из описаний задач ---
 function extractTaskMentions(tasks){
   var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
   tasks.forEach(function(t){
@@ -344,80 +363,96 @@ function extractTaskMentions(tasks){
       allMentions.push({
         type:'task',taskId:t.id||t.ID,
         title:t.title||t.TITLE,
-        text:text,date:(t.createdDate||t.CREATED_DATE||'').substring(0,16),
+        text:truncate(text,200),
+        date:(t.createdDate||t.CREATED_DATE||'').substring(0,16),
         key:'d_'+(t.id||t.ID)
       });
     }
   });
 }
 
-// === Chat Mentions ===
-function processChatMentions(dialogResult){
-  // im.dialog.list can return array or {items:[]}
-  var dialogs=Array.isArray(dialogResult)?dialogResult:(dialogResult.items||[]);
+// --- Чаты задач: im.dialog.messages.get по CHAT_ID каждой задачи ---
+function loadAllTaskChats(tasks){
+  if(!tasks||!tasks.length)return Promise.resolve(0);
   var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
-  var mentionDialogs=[];
+  var batchSize=5;
+  var idx=0;
+  var totalLoaded=0;
 
-  dialogs.forEach(function(d){
-    var lastMsg=d.last_message||d.lastMessage||{};
-    var text=lastMsg.text||'';
-    if(tag.test(text)){
-      tag.lastIndex=0;
-      mentionDialogs.push({
-        chatId:d.chat_id||d.chatId||lastMsg.chat_id,
-        title:d.title||d.name||'Чат #'+(d.chat_id||d.chatId),
-        type:d.type||'chat',
-        msgId:lastMsg.id,
-        fromId:lastMsg.author_id||lastMsg.from_id||lastMsg.authorId,
-        date:lastMsg.date||'',
-        snippet:text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()
-      });
-    }
-  });
+  function processBatch(){
+    var batch=tasks.slice(idx,idx+batchSize);
+    if(!batch.length)return Promise.resolve(totalLoaded);
+    idx+=batchSize;
 
-  if(!mentionDialogs.length)return Promise.resolve();
+    var promises=batch.map(function(t){
+      var tid=t.id||t.ID;
+      var chatId=t.chatId||t.CHAT_ID;
+      if(!chatId){
+        console.log('[chat] task '+tid+': no CHAT_ID, skipping');
+        return Promise.resolve(0);
+      }
 
-  // Fetch last 20 messages from each chat that has a mention
-  var fetches=mentionDialogs.map(function(md){
-    return bxPost('im.message.list',{CHAT_ID:md.chatId,LIMIT:20}).then(function(r){
-      if(!r||!r.result)return;
-      var msgs=Array.isArray(r.result)?r.result:[];
-      chatCache[md.chatId]=msgs;
-      // Find ALL mentions in messages (not just last)
-      msgs.forEach(function(m){
-        var mText=m.text||'';
-        if(tag.test(mText)){
+      return bxPost('im.dialog.messages.get',{DIALOG_ID:'chat'+chatId,LIMIT:50})
+      .then(function(r){
+        if(r.error){
+          console.warn('[chat] task '+tid+' (chat '+chatId+'): '+r.error);
+          return 0;
+        }
+        var raw=r.result;
+        var msgs=raw&&raw.messages;
+        if(!msgs){taskChatCache[tid]=[];return 0}
+        msgs=Array.isArray(msgs)?msgs:[];
+        taskChatCache[tid]=msgs;
+        totalLoaded+=msgs.length;
+
+        // Ищем упоминания [USER=xxx] в сообщениях чата задачи
+        msgs.forEach(function(m){
+          var mText=m.text||'';
+          if(!mText||!tag.test(mText))return;
           tag.lastIndex=0;
+
+          var mKey='chat_'+tid+'_'+(m.id||m.ID);
+          // Нет дубликатов
+          for(var i=0;i<allMentions.length;i++){if(allMentions[i].key===mKey)return}
+
           var cleanText=mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
           cleanText=cleanText.replace(tag,'<mark>@'+esc(NAMES[MY_ID]||'#'+MY_ID)+'</mark>');
           var dateStr=(m.date||'').substring(0,16).replace('T',' ');
+          var fromId=m.author_id||m.from_id||m.authorId||0;
+          var fromName=NAMES[String(fromId)]||('#'+fromId);
+
           allMentions.push({
-            type:'chat',chatId:md.chatId,msgId:m.id||m.ID,
-            title:md.title,
-            text:cleanText,date:dateStr,
-            fromId:m.author_id||m.from_id||m.authorId||0,
-            key:'chat_'+md.chatId+'_'+(m.id||m.ID)
+            type:'chat',taskId:tid,chatId:chatId,
+            title:'Чат: '+(t.title||t.TITLE),
+            fromName:fromName,
+            text:truncate(cleanText,200),
+            date:dateStr,
+            key:mKey
           });
-        }
+        });
+        return msgs.length;
+      })
+      .catch(function(e){
+        console.warn('[chat] task '+tid+' fetch error:',e.message);
+        return 0;
       });
-    }).catch(function(){});
-  });
-  return Promise.all(fetches);
+    });
+
+    return Promise.all(promises).then(function(){return processBatch()});
+  }
+
+  return processBatch();
 }
 
-// === Drill Panel ===
+// === Drill panel ===
 document.getElementById('tasksBox').addEventListener('click',function(e){
   var row=e.target.closest('.task-row');if(!row)return;
   openTaskDrill(Number(row.getAttribute('data-tid')));
 });
 document.getElementById('mentionsBox').addEventListener('click',function(e){
   var m=e.target.closest('.mention');if(!m)return;
-  var type=m.getAttribute('data-type');
-  if(type==='chat'){
-    openChatDrill(m.getAttribute('data-chatid'));
-  }else{
-    openTaskDrill(Number(m.getAttribute('data-tid')));
-  }
+  var tid=m.getAttribute('data-tid');
+  if(tid)openTaskDrill(Number(tid));
 });
 
 function openTaskDrill(tid){
@@ -430,6 +465,7 @@ function openTaskDrill(tid){
   var respId=task.responsibleId||task.RESPONSIBLE_ID;
   var dl=(task.deadline||task.DEADLINE||'').substring(0,16);
   var od=isOverdue(task);
+  var chatId=task.chatId||task.CHAT_ID;
   var base=HOOK?HOOK.split('/rest/')[0]:'';
 
   document.getElementById('dpTitle').textContent=task.title||task.TITLE;
@@ -440,7 +476,7 @@ function openTaskDrill(tid){
     '<div class="dm-item"><div class="dm-lbl">Создана</div><div class="dm-val">'+((task.createdDate||task.CREATED_DATE||'').substring(0,10))+'</div></div>'+
     (base?'<div class="dm-item"><div class="dm-lbl">Битрикс</div><div class="dm-val"><a href="'+base+'/company/personal/user/'+MY_ID+'/tasks/task/view/'+tid+'/" target="_blank">↗ открыть #'+tid+'</a></div></div>':'');
 
-  // Build panel content: description + comments
+  // Panel body: description + task chat
   var desc=(task.description||task.DESCRIPTION||'').trim();
   var html='';
 
@@ -448,77 +484,107 @@ function openTaskDrill(tid){
     html+='<div class="dsection"><div class="dsection-title"><span class="ds-dot blue"></span>Описание</div><div class="ddesc">'+desc+'</div></div>';
   }
 
-  html+='<div class="dsection"><div class="dsection-title"><span class="ds-dot green"></span>Комментарии</div><div class="loading"><div class="ring"></div>Загрузка...</div></div>';
+  // Чат задачи (im.message.list по CHAT_ID)
+  html+='<div class="dsection" id="chatSection">';
+  if(chatId){
+    html+='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div class="loading"><div class="ring"></div>Загрузка чата...</div>';
+  } else {
+    html+='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div class="derror">У задачи нет CHAT_ID — чат не привязан</div>';
+  }
+  html+='</div>';
 
   document.getElementById('dpBody').innerHTML=html;
   openPanel();
 
-  // Load comments
-  bxPost('task.commentitem.getlist',{TASK_ID:tid,select:['ID','AUTHOR_ID','AUTHOR_NAME','AUTHOR_LAST_NAME','POST_MESSAGE','CREATED_DATE']})
-  .then(function(comments){
-    if(!comments||!comments.result||!comments.result.length){
-      document.getElementById('dpBody').querySelector('.dsection:last-child .loading').outerHTML='<div class="empty-text" style="padding:12px 0">Нет комментариев</div>';
+  // Загрузка чата задачи
+  if(!chatId)return;
+
+  // Если уже кэширован — рендерим сразу
+  if(taskChatCache[tid]){
+    renderTaskChat(tid,taskChatCache[tid]);
+    return;
+  }
+
+  bxPost('im.dialog.messages.get',{DIALOG_ID:'chat'+chatId,LIMIT:50})
+  .then(function(r){
+    if(!r){
+      showChatError('Нет ответа от API');
       return;
     }
-    var cmts=Array.isArray(comments.result)?comments.result:[];
-    cmts.sort(function(a,b){return(b.CREATED_DATE||'').localeCompare(a.CREATED_DATE||'')});
-    var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
-    var chtml='';
-    cmts.forEach(function(c){
-      var cId=String(c.ID||c.id||'');
-      var isNew=!seenComments['c_'+tid+'_'+cId];
-      seenComments['c_'+tid+'_'+cId]=true;
-      var dateStr=(c.CREATED_DATE||'').substring(0,16).replace('T',' ');
-      var name=((c.AUTHOR_NAME||'')+' '+(c.AUTHOR_LAST_NAME||'')).trim();
-      var text=(c.POST_MESSAGE||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-      var isMention=false;
-      if(tag.test(text)){tag.lastIndex=0;text=text.replace(tag,'<mark>@я</mark>');isMention=true}
-      chtml+='<div class="cmt '+(isNew?'is-new ':'')+(isMention?'highlight ':'')+'"><div class="cmt-header"><div class="cmt-author">'+esc(name||'#'+(c.AUTHOR_ID||''))+'</div><div class="cmt-time">'+esc(dateStr)+'</div></div><div class="cmt-text">'+(text||'<span style="color:var(--text3)">— пустой —</span>')+'</div></div>';
-    });
-    var lastSec=document.getElementById('dpBody').querySelector('.dsection:last-child');
-    lastSec.innerHTML='<div class="dsection-title"><span class="ds-dot green"></span>Комментарии ('+cmts.length+')</div>'+chtml;
-    saveSeen();renderAll();
+    if(r.error){
+      showChatError(r.error_description||r.error);
+      return;
+    }
+    var raw=r.result;
+    var msgs=raw&&raw.messages;
+    if(!msgs){
+      taskChatCache[tid]=[];
+      showChatError('Чат задачи пуст или недоступен');
+      return;
+    }
+    msgs=Array.isArray(msgs)?msgs:[];
+    taskChatCache[tid]=msgs;
+    renderTaskChat(tid,msgs);
+  })
+  .catch(function(err){
+    showChatError(err.message||'Ошибка сети');
   });
 }
 
-function openChatDrill(chatId){
-  if(!chatId)return;
-  seenComments['chat_'+chatId]=true;saveSeen();
+function showChatError(errMsg){
+  var sec=document.getElementById('chatSection');
+  if(!sec)return;
+  sec.innerHTML='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div class="derror">Не удалось загрузить чат: <code>'+esc(errMsg)+'</code><br><span style="color:var(--text3);font-size:11px">Для чатов задач нужно право «Чат и уведомления (im)» в вебхуке</span></div>';
+  console.warn('[taskChat] error:',errMsg);
+}
 
-  var msgs=chatCache[chatId]||[];
-  var title='Чат';
-  allMentions.forEach(function(m){if(m.chatId==chatId&&m.title)title=m.title});
-  var base=HOOK?HOOK.split('/rest/')[0]:'';
+function renderTaskChat(tid,msgs){
+  var sec=document.getElementById('chatSection');
+  if(!sec)return;
 
-  document.getElementById('dpTitle').textContent=title;
-  document.getElementById('dpMeta').innerHTML=
-    '<div class="dm-item"><div class="dm-lbl">Тип</div><div class="dm-val">Чат</div></div>'+
-    '<div class="dm-item"><div class="dm-lbl">Сообщений</div><div class="dm-val">'+msgs.length+'</div></div>'+
-    (base?'<div class="dm-item"><div class="dm-lbl">Битрикс</div><div class="dm-val"><a href="'+base+'/online/?IM_CHAT='+chatId+'" target="_blank">↗ открыть чат</a></div></div>':'');
-
-  if(!msgs.length){
-    document.getElementById('dpBody').innerHTML='<div class="empty"><div class="empty-text">Нет сообщений</div></div>';
-    openPanel();return;
+  if(!msgs||!msgs.length){
+    sec.innerHTML='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div style="color:var(--text3);font-size:12px;padding:8px 0">В чате задач нет сообщений</div>';
+    return;
   }
 
+  // Сортируем по дате (старые сверху)
+  msgs.sort(function(a,b){return(a.date||'').localeCompare(b.date||'')});
+
   var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
-  var html='<div class="dsection"><div class="dsection-title"><span class="ds-dot purple"></span>Сообщения ('+msgs.length+')</div>';
+  var html='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи ('+msgs.length+' сообщ.)</div>';
+
   msgs.forEach(function(m){
     var mText=m.text||'';
-    var isMention=tag.test(mText);tag.lastIndex=0;
+
+    // Системные сообщения (создание задачи, смена статуса и т.д.)
+    var isSystem=!!(m.system||m.SYSTEM||m.event_id||m.MESSAGE_TYPE==='S');
+    if(isSystem){
+      var sysText=mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+      if(sysText){
+        html+='<div class="cmt-sys">'+esc(truncate(sysText,120))+'</div>';
+      }
+      return;
+    }
+
+    var isMention=false;
+    if(mText&&tag.test(mText)){tag.lastIndex=0;isMention=true}
     if(isMention)mText=mText.replace(tag,'<mark>@я</mark>');
+
     var dateStr=(m.date||'').substring(0,16).replace('T',' ');
     var fromId=m.author_id||m.from_id||m.authorId||0;
     var name=NAMES[String(fromId)]||('#'+fromId);
-    html+='<div class="cmt '+(isMention?'highlight':'')+'"><div class="cmt-header"><div class="cmt-author">'+esc(name)+'</div><div class="cmt-time">'+esc(dateStr)+'</div></div><div class="cmt-text">'+(mText||'<span style="color:var(--text3)">— пустое —</span>')+'</div></div>';
-  });
-  html+='</div>';
-  document.getElementById('dpBody').innerHTML=html;
-  openPanel();
 
-  // Scroll to first mention
+    // Форматируем: убираем HTML, но оставляем текст читаемым
+    var displayText=mText?esc(mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()):'<span style="color:var(--text3)">—</span>';
+
+    html+='<div class="cmt '+(isMention?'highlight':'')+'"><div class="cmt-header"><div class="cmt-author">'+esc(name)+'</div><div class="cmt-time">'+esc(dateStr)+'</div></div><div class="cmt-text">'+displayText+'</div></div>';
+  });
+
+  sec.innerHTML=html;
+
+  // Прокрутить к первому упоминанию
   setTimeout(function(){
-    var hl=document.querySelector('.cmt.highlight');
+    var hl=sec.querySelector('.cmt.highlight');
     if(hl)hl.scrollIntoView({behavior:'smooth',block:'center'});
   },350);
 }
@@ -537,15 +603,13 @@ document.getElementById('mFilters').addEventListener('click',function(e){
   var chip=e.target.closest('.fchip');if(!chip)return;
   mentionFilter=chip.getAttribute('data-mf');
   this.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});
-  chip.classList.add('active');
-  renderMentions();
+  chip.classList.add('active');renderMentions();
 });
 document.getElementById('tFilters').addEventListener('click',function(e){
   var chip=e.target.closest('.fchip');if(!chip)return;
   taskFilter=chip.getAttribute('data-tf');
   this.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});
-  chip.classList.add('active');
-  renderTasks();
+  chip.classList.add('active');renderTasks();
 });
 function filterMentions(f,el){
   mentionFilter=f||'all';
@@ -569,13 +633,15 @@ function renderMentions(){
   document.getElementById('mentionBadge').textContent=allMentions.length;
   if(!list.length){
     box.innerHTML='<div class="empty"><div class="empty-icon">💬</div><div class="empty-text">'+
-      (allMentions.length?'Нет '+mentionFilter+' упоминаний':'Упоминаний не найдено')+'</div></div>';return;
+      (allMentions.length?'Нет «'+mentionFilter+'»':'Упоминаний не найдено')+'</div></div>';return;
   }
   box.innerHTML=list.map(function(m){
     var isNew=!seenComments[m.key];
     var icon=m.type==='chat'?'chat':'task';
-    var dataAttr=m.type==='chat'?'data-type="chat" data-chatid="'+m.chatId+'"':'data-type="task" data-tid="'+m.taskId+'"';
-    return '<div class="mention '+(isNew?'new':'read')+'" '+dataAttr+'><div class="mention-head"><div class="mention-source"><span class="src-icon '+icon+'">'+(m.type==='chat'?'💬':'T')+'</span> '+esc(truncate(m.title,50))+'</div><div class="mention-time">'+esc(m.date)+'</div></div><div class="mention-text">'+m.text+'</div></div>';
+    var iconChar=m.type==='chat'?'💬':'T';
+    var dataAttr='data-type="'+m.type+'" data-tid="'+m.taskId+'"';
+    var authorLine=m.fromName?'<span style="color:var(--cyan);font-weight:500;font-size:11px;margin-right:4px">'+esc(m.fromName)+':</span> ':'';
+    return '<div class="mention '+(isNew?'new':'read')+'" '+dataAttr+'><div class="mention-head"><div class="mention-source"><span class="src-icon '+icon+'">'+iconChar+'</span> '+esc(truncate(m.title,45))+'</div><div class="mention-time">'+esc(m.date)+'</div></div><div class="mention-text">'+authorLine+m.text+'</div></div>';
   }).join('');
 }
 function renderTasks(){
@@ -598,7 +664,9 @@ function renderTasks(){
     var stage=getStage(t),od=isOverdue(t),tid=t.id||t.ID;
     var respId=t.responsibleId||t.RESPONSIBLE_ID;
     var dl=(t.deadline||t.DEADLINE||'').substring(0,10);
-    return '<div class="task-row" data-tid="'+tid+'"><div class="task-dot '+(od?'overdue':stage.id)+'"></div><div class="task-info"><div class="task-title">'+esc(truncate(t.title||t.TITLE,70))+'</div><div class="task-meta"><span class="emp">'+esc(NAMES[String(respId)]||('#'+respId))+'</span><span class="stage" style="color:'+stage.color+'">'+stage.name+'</span><span class="deadline '+(od?'over':'')+'">'+(dl||'—')+'</span></div></div></div>';
+    var chatId=t.chatId||t.CHAT_ID;
+    var chatHint=chatId?'<span style="color:var(--purple);font-size:10px">💬'+chatId+'</span>':'';
+    return '<div class="task-row" data-tid="'+tid+'"><div class="task-dot '+(od?'overdue':stage.id)+'"></div><div class="task-info"><div class="task-title">'+esc(truncate(t.title||t.TITLE,70))+'</div><div class="task-meta"><span class="emp">'+esc(NAMES[String(respId)]||('#'+respId))+'</span><span class="stage" style="color:'+stage.color+'">'+stage.name+'</span><span class="deadline '+(od?'over':'')+'">'+(dl||'—')+'</span>'+chatHint+'</div></div></div>';
   }).join('');
 }
 function renderKPI(){
@@ -610,13 +678,12 @@ function renderKPI(){
   document.getElementById('kpiOverdue').textContent=overdue;
   document.getElementById('kpiMentions').textContent=allMentions.length;
   var newEl=document.getElementById('kpiMentionsNew');
-  newEl.textContent=newM>0?' +'+newM:'';
-  newEl.style.cssText='font-size:14px;color:var(--accent);margin-left:4px;'+(newM>0?'font-weight:700':'');
+  if(newM>0){newEl.textContent='+'+newM;newEl.style.display='inline'}
+  else{newEl.textContent='';newEl.style.display='none'}
   document.getElementById('kpiDone').textContent=closedCount;
 }
 function renderAll(){renderKPI();renderMentions();renderTasks()}
 
-// === Helpers ===
 function getStage(t){
   var s=String(t.status||t.STATUS||'0');
   if(s==='2')return{id:'new',name:'Новая',color:'var(--accent)'};
@@ -633,7 +700,6 @@ function truncate(s,n){if(!s)return '';s=String(s).trim();return s.length<=n?s:s
 function loadSeen(){try{seenComments=JSON.parse(localStorage.getItem('dk_seen')||'{}')}catch(e){seenComments={}}}
 function saveSeen(){try{localStorage.setItem('dk_seen',JSON.stringify(seenComments))}catch(e){}}
 
-// === Init ===
 loadConfig();loadSeen();
 if(!localStorage.getItem('dk_hook')){
   try{localStorage.setItem('dk_hook',HOOK);localStorage.setItem('dk_myid',MY_ID);localStorage.setItem('dk_empids',EMP_IDS.join(','))}catch(e){}
