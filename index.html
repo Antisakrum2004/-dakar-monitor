@@ -1136,81 +1136,96 @@
   /* API counter in header */
   .api-counter {
     font-family: 'Courier New', monospace;
-    font-size: 10px;
+    font-size: 13px;
     color: #22d47e;
-    opacity: 0.55;
     letter-spacing: 0.02em;
     white-space: nowrap;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 1px;
-    line-height: 1.2;
+    gap: 0px;
+    line-height: 1.3;
+    text-shadow: 0 0 8px rgba(34,212,126,0.3);
   }
   .api-counter .ac-today {
-    font-size: 10px;
+    font-size: 13px;
     color: #22d47e;
-    opacity: 0.7;
+    font-weight: 700;
   }
   .api-counter .ac-rate {
-    font-size: 9px;
-    color: #5a6070;
-    opacity: 0.8;
+    font-size: 12px;
+    color: #5eee9e;
+    font-weight: 600;
   }
 
-  /* Reply button on hover */
+  /* Pause button */
+  .hbtn.pause {
+    color: #ff8c42;
+  }
+  .hbtn.pause:hover {
+    background: rgba(255,140,66,0.15);
+  }
+  .hbtn.pause.paused {
+    color: #22d47e;
+  }
+  .hbtn.pause.paused:hover {
+    background: rgba(34,212,126,0.15);
+  }
+
+  /* Reply button on hover — bright teal like send button */
   .chat-msg-bubble {
     position: relative;
   }
   .chat-msg-bubble .reply-btn {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 22px;
-    height: 22px;
-    border-radius: 4px;
+    top: 3px;
+    right: 3px;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
     border: none;
-    background: rgba(255,255,255,0.08);
-    color: #666d7a;
-    font-size: 10px;
+    background: #288874;
+    color: #ffffff;
+    font-size: 13px;
     cursor: pointer;
     display: none;
     align-items: center;
     justify-content: center;
     transition: all 0.15s;
     z-index: 2;
+    box-shadow: 0 2px 6px rgba(40,136,116,0.35);
   }
   .chat-msg-bubble:hover .reply-btn {
     display: flex;
   }
   .chat-msg-bubble .reply-btn:hover {
-    background: rgba(40,136,116,0.3);
-    color: #288874;
+    background: #2a9a84;
+    box-shadow: 0 2px 10px rgba(40,136,116,0.5);
+    transform: scale(1.08);
   }
   .chat-msg.self .chat-msg-bubble .reply-btn {
     right: auto;
-    left: 4px;
+    left: 3px;
   }
-  /* Reply quote preview in input */
+  /* Reply quote preview in input — auto-expands */
   .reply-quote {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 6px;
-    padding: 5px 10px;
-    background: rgba(40,136,116,0.1);
-    border-left: 2px solid #288874;
-    border-radius: 0 4px 4px 0;
-    font-size: 11px;
-    color: #8e949e;
+    padding: 8px 10px;
+    background: rgba(40,136,116,0.12);
+    border-left: 3px solid #288874;
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+    color: #b0b5c0;
     margin-bottom: 6px;
     animation: fadeInUp 0.15s ease;
   }
   .reply-quote-text {
     flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #b0b5c0;
+    color: #d0d4dc;
+    line-height: 1.4;
+    word-break: break-word;
   }
   .reply-quote-close {
     width: 16px;
@@ -1257,10 +1272,11 @@
     font-family: 'Inter', sans-serif;
     resize: none;
     outline: none;
-    min-height: 36px;
-    max-height: 80px;
+    min-height: 38px;
+    max-height: 160px;
     line-height: 1.4;
     transition: border-color 0.15s;
+    overflow-y: auto;
   }
   .chat-input:focus {
     border-color: rgba(40,136,116,0.5);
@@ -1441,6 +1457,7 @@
         <span class="ac-today" id="acToday">0 today</span>
         <span class="ac-rate" id="acRate">0/min</span>
       </div>
+      <button class="hbtn pause" id="pauseBtn" onclick="togglePause()" title="Пауза опроса">&#10074;&#10074;</button>
       <button class="hbtn" onclick="openConfig()" title="Настройки">&#9881;</button>
       <button class="hbtn primary" id="loadBtn" onclick="loadData()">
         <span class="btn-text">&#8635; Загрузить</span>
@@ -2800,20 +2817,50 @@ function renderChatMessages(msgs) {
 }
 
 /* ================================================================
+   PAUSE / RESUME POLLING
+   ================================================================ */
+var isPaused = false;
+
+function togglePause() {
+  var btn = document.getElementById('pauseBtn');
+  if (isPaused) {
+    // Resume
+    isPaused = false;
+    btn.classList.remove('paused');
+    btn.innerHTML = '&#10074;&#10074;';
+    btn.title = 'Пауза опроса';
+    if (pollActive) {
+      startPolling();
+      setStatus('Опрос возобновлён', false, false);
+    }
+  } else {
+    // Pause
+    isPaused = true;
+    btn.classList.add('paused');
+    btn.innerHTML = '&#9654;';
+    btn.title = 'Возобновить опрос';
+    stopPolling();
+    setStatus('Опрос приостановлен', false, false);
+  }
+}
+
+/* ================================================================
    CHAT REPLY TO MESSAGE
    ================================================================ */
 function setReplyTo(msgId, authorName, quoteText) {
   replyToMsgId = msgId;
   replyToText = quoteText || '';
   var area = document.getElementById('replyQuoteArea');
-  var shortQuote = esc(replyToText).length > 50 ? esc(replyToText).substring(0, 47) + '...' : esc(replyToText);
+  var fullQuote = esc(authorName) + ': \u00AB' + esc(replyToText) + '\u00BB';
   if (area) {
     area.innerHTML = '<div class="reply-quote">' +
-      '<span class="reply-quote-text">\u00AB' + shortQuote + '\u00BB</span>' +
-      '<button class="reply-quote-close" onclick="clearReplyQuote()">&times;</button>' +
+      '<span class="reply-quote-text">' + fullQuote + '</span>' +
+      '<button class="reply-quote-close" onclick="clearReplyQuote()" style="width:22px;height:22px;font-size:14px;">&times;</button>' +
       '</div>';
   }
-  document.getElementById('chatInput').focus();
+  var input = document.getElementById('chatInput');
+  input.focus();
+  autoResizeInput();
 }
 
 function clearReplyQuote() {
@@ -2861,7 +2908,6 @@ function sendChatMessage() {
     input.value = '';
     input.style.height = 'auto';
     clearReplyQuote();
-    // Refresh chat
     if (taskChatCache[currentChatTaskId]) {
       var newMsg = {
         id: r.result,
@@ -2890,6 +2936,26 @@ function handleChatKey(e) {
     sendChatMessage();
   }
 }
+
+function autoResizeInput() {
+  var input = document.getElementById('chatInput');
+  if (!input) return;
+  input.style.height = 'auto';
+  var newH = Math.min(input.scrollHeight, 160);
+  input.style.height = newH + 'px';
+}
+
+// Auto-resize on input
+(function() {
+  var origOnload = window.onload || function() {};
+  window.onload = function() {
+    origOnload();
+    var chatInput = document.getElementById('chatInput');
+    if (chatInput) {
+      chatInput.addEventListener('input', autoResizeInput);
+    }
+  };
+})();
 
 function showChatError(msg) {
   var panel = document.getElementById('chatPanel');
