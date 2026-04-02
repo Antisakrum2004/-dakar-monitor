@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23ff8c42'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>D</text></svg>">
+<title>Дакар · Мониторинг задач</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d14;--bg2:#10141e;--bg3:#181d2a;--glass:rgba(18,21,31,.55);--glass-border:rgba(255,255,255,.06);--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.12);--text:#e8ecf4;--text2:#8892a8;--text3:#4a5268;--accent:#00d4ff;--green:#22d47e;--yellow:#f5a623;--red:#ff4f6a;--orange:#ff8c42;--cyan:#22d4ee;--purple:#7c5cfc;--mono:'JetBrains Mono',monospace;--radius:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+[data-v-inspector],iframe[src*="vercel"],.vercel-toast,[class*="__vercel"]{display:none!important;opacity:0!important;pointer-events:none!important;height:0!important;width:0!important;position:fixed!important;top:-9999px!important;z-index:-1!important}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+
+.header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--glass-border);background:var(--bg2);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.brand .bdot{width:8px;height:8px;border-radius:50%;background:var(--orange)}
+.brand .bsub{color:var(--text3);font-weight:400;font-size:11px}
+.header-actions{display:flex;align-items:center;gap:8px}
+.btn{padding:8px 16px;border:1px solid var(--glass-border);border-radius:6px;background:rgba(18,21,31,.6);color:var(--text);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{border-color:var(--border2);background:rgba(18,21,31,.8)}
+.btn.primary{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+.btn.primary:hover{opacity:.85}
+.btn.primary:disabled{opacity:.4;cursor:not-allowed}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px 24px;border-bottom:1px solid var(--glass-border)}
+@media(max-width:700px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
+.kpi{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:14px 16px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,opacity .15s}
+.kpi:hover{border-color:var(--border2);opacity:.88}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.orange::before{background:var(--orange)}.kpi.green::before{background:var(--green)}.kpi.red::before{background:var(--red)}.kpi.cyan::before{background:var(--cyan)}.kpi.purple::before{background:var(--purple)}
+.kpi-val{font-family:var(--mono);font-size:28px;font-weight:700;line-height:1}
+.kpi-sub{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent);margin-left:4px}
+.kpi-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+.kpi.hint{font-size:10px;color:var(--text3);margin-top:2px}
+
+.main{display:grid;grid-template-columns:1fr 1.4fr;gap:0;height:calc(100vh - 170px)}
+@media(max-width:900px){.main{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 170px)}}
+
+.section{border-right:1px solid var(--glass-border);display:flex;flex-direction:column}
+.section:last-child{border-right:none}
+.section-head{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--glass-border);flex-shrink:0}
+.section-title{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);display:flex;align-items:center;gap:8px}
+.section-badge{background:var(--orange);color:#000;font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;min-width:20px;text-align:center}
+.section-body{flex:1;overflow-y:auto;padding:0;-webkit-overflow-scrolling:touch}
+
+.mention{padding:14px 20px;border-bottom:1px solid var(--glass-border);cursor:pointer;transition:background .1s;border-left:3px solid transparent}
+.mention:hover{background:rgba(79,139,255,.06);border-left-color:var(--purple)}
+.mention:active{background:rgba(79,139,255,.12);border-left-color:var(--accent)}
+.mention-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mention-source{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px}
+.mention-source .src-icon{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.mention-source .src-icon.task{background:rgba(0,212,255,.15);color:var(--accent)}
+.mention-source .src-icon.chat{background:rgba(124,92,252,.15);color:var(--purple)}
+.mention-time{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.mention-text{font-size:13px;color:var(--text);line-height:1.4}
+.mention-text mark{background:rgba(0,212,255,.2);color:var(--accent);border-radius:2px;padding:0 2px}
+.mention.new{border-left:3px solid var(--accent)}
+.mention.read{opacity:.55}
+
+.task-row{padding:12px 20px;border-bottom:1px solid var(--glass-border);cursor:pointer;transition:background .1s,border-color .1s;display:flex;align-items:center;gap:14px;border-left:3px solid transparent}
+.task-row:hover{background:rgba(79,139,255,.06);border-left-color:var(--accent)}
+.task-row:active{background:rgba(79,139,255,.12);border-left-color:var(--green)}
+.task-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.task-dot.new{background:var(--accent)}.task-dot.in-progress{background:var(--orange)}.task-dot.review{background:var(--yellow)}.task-dot.done{background:var(--green)}.task-dot.overdue{background:var(--red)}
+.task-info{flex:1;min-width:0}
+.task-title{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task-meta{display:flex;align-items:center;gap:10px;margin-top:3px;font-size:11px;color:var(--text3)}
+.task-meta .emp{color:var(--cyan);font-weight:500}
+.task-meta .stage{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,.05);text-transform:uppercase;letter-spacing:.04em}
+.task-meta .deadline{color:var(--text3)}
+.task-meta .deadline.over{color:var(--red)}
+
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none}.ov.show{display:block}
+.dpanel{position:fixed;right:0;top:0;bottom:0;width:520px;background:rgba(13,16,24,.92);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-left:1px solid var(--glass-border);z-index:200;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column}
+.dpanel.open{transform:translateX(0)}
+@media(max-width:600px){.dpanel{width:100%}}
+.dhead{padding:18px 22px;border-bottom:1px solid var(--glass-border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.dtitle{font-size:16px;font-weight:700;line-height:1.3;flex:1;margin-right:12px}
+.dcls{width:28px;height:28px;background:rgba(18,21,31,.6);border:1px solid var(--glass-border);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2);transition:all .15s;flex-shrink:0}
+.dcls:hover{border-color:var(--red);color:var(--red)}
+.dmeta{padding:14px 22px;border-bottom:1px solid var(--glass-border);display:flex;gap:20px;flex-wrap:wrap;font-size:12px;flex-shrink:0}
+.dm-item{display:flex;flex-direction:column;gap:2px}
+.dm-lbl{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.dm-val{color:var(--text);font-weight:600}
+.dm-val a{color:var(--accent);text-decoration:none}.dm-val a:hover{text-decoration:underline}
+.dbody{flex:1;overflow-y:auto;padding:0;-webkit-overflow-scrolling:touch}
+.dbody::-webkit-scrollbar{width:5px}.dbody::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.dsection{padding:14px 22px;border-bottom:1px solid var(--glass-border)}
+.dsection-title{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.dsection-title .ds-dot{width:6px;height:6px;border-radius:50%}
+.dsection-title .ds-dot.blue{background:var(--accent)}
+.dsection-title .ds-dot.green{background:var(--green)}
+.dsection-title .ds-dot.purple{background:var(--purple)}
+.ddesc{font-size:13px;color:var(--text2);line-height:1.6;word-break:break-word}
+.ddesc a{color:var(--accent)}
+.ddesc img{max-width:100%;border-radius:6px;margin:8px 0}
+.derror{font-size:12px;color:var(--red);padding:8px 0;line-height:1.5}
+.derror code{background:rgba(255,79,106,.1);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:11px}
+
+.cmt{padding:10px 22px;border-bottom:1px solid var(--glass-border)}
+.cmt-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.cmt-author{font-size:12px;font-weight:600;color:var(--text)}
+.cmt-time{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.cmt-text{font-size:13px;color:var(--text2);line-height:1.5;word-break:break-word}
+.cmt-text mark{background:rgba(0,212,255,.2);color:var(--accent);border-radius:2px;padding:0 2px}
+.cmt.is-new{background:rgba(34,212,126,.04)}
+.cmt.highlight{background:rgba(0,212,255,.06);border-left:3px solid var(--accent)}
+.cmt-sys{font-size:11px;color:var(--text3);font-style:italic;padding:6px 22px;border-bottom:1px solid var(--glass-border)}
+
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-ov.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--glass-border);border-radius:14px;width:520px;max-width:94vw;max-height:85vh;overflow-y:auto;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.modal-head{padding:18px 22px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-family:var(--mono);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.modal-body{padding:20px 22px}
+.modal-body label{display:block;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;margin-top:14px}
+.modal-body label:first-child{margin-top:0}
+.modal-body input{width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--glass-border);border-radius:6px;color:var(--text);font-size:13px;font-family:var(--mono)}
+.modal-body input:focus{outline:none;border-color:var(--accent)}
+.modal-body .hint{font-size:10px;color:var(--text3);margin-top:4px}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--glass-border);display:flex;justify-content:flex-end;gap:8px}
+
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:var(--text3);font-size:13px;text-align:center;gap:8px}
+.empty-icon{font-size:32px;opacity:.4}
+.empty-text{font-family:var(--mono);font-size:11px}
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:10px;color:var(--text3);font-family:var(--mono);font-size:12px}
+.ring{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.filters{display:flex;gap:6px;padding:10px 20px;border-bottom:1px solid var(--glass-border);flex-wrap:wrap;flex-shrink:0}
+.fchip{padding:4px 10px;border:1px solid var(--glass-border);border-radius:12px;font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .1s;color:var(--text2);background:transparent;-webkit-user-select:none;user-select:none}
+.fchip:hover{border-color:var(--border2);color:var(--text)}
+.fchip:active{background:rgba(255,255,255,.06)}
+.fchip.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+.fchip.active:hover{opacity:.85}
+
+.status-bar{padding:8px 20px;border-bottom:1px solid var(--glass-border);font-family:var(--mono);font-size:10px;color:var(--text3);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.status-bar .sloader{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.status-bar.error{color:var(--red);background:rgba(255,79,106,.06)}
+.status-bar.warn{color:var(--yellow)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    <div class="bdot"></div>
+    <span>ДАКАР</span>
+    <span class="bsub">мониторинг задач</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn" onclick="openConfig()">⚙</button>
+    <button class="btn primary" id="loadBtn" onclick="loadData()">Загрузить</button>
+  </div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi cyan" onclick="filterTasks('all',document.querySelector('[data-tf=all]'))"><div class="kpi-val" id="kpiTotal">-</div><div class="kpi-lbl">Активных задач</div><div class="hint">4 сотрудника</div></div>
+  <div class="kpi orange" onclick="filterTasks('in-progress',document.querySelector('[data-tf=in-progress]'))"><div class="kpi-val" id="kpiInWork">-</div><div class="kpi-lbl">В работе</div><div class="hint">статус «в работе»</div></div>
+  <div class="kpi red" onclick="filterTasks('overdue',document.querySelector('[data-tf=overdue]'))"><div class="kpi-val" id="kpiOverdue">-</div><div class="kpi-lbl">Просрочено</div><div class="hint">прошли дедлайны</div></div>
+  <div class="kpi purple" onclick="filterMentions('all',document.querySelector('[data-mf=all]'))"><div class="kpi-val" id="kpiMentions">-</div><div class="kpi-lbl">Упоминания</div><span class="kpi-sub" id="kpiMentionsNew" style="display:none"></span></div>
+  <div class="kpi green" onclick="openClosedDrill()"><div class="kpi-val" id="kpiDone">-</div><div class="kpi-lbl">Закрыто за 30д</div><div class="hint">завершённые</div></div>
+</div>
+
+<div class="status-bar" id="statusBar">Нажмите «Загрузить» для обновления данных</div>
+
+<div class="main">
+  <div class="section">
+    <div class="section-head">
+      <div class="section-title">💬 Упоминания <span class="section-badge" id="mentionBadge">0</span></div>
+    </div>
+    <div class="filters" id="mFilters">
+      <div class="fchip active" data-mf="all">Все</div>
+      <div class="fchip" data-mf="new">Новые</div>
+      <div class="fchip" data-mf="task">Задачи</div>
+      <div class="fchip" data-mf="chat">Чаты задач</div>
+      <div class="fchip" data-mf="read">Прочитанные</div>
+    </div>
+    <div class="section-body" id="mentionsBox"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">Нажмите «Загрузить»</div></div></div>
+  </div>
+  <div class="section">
+    <div class="section-head">
+      <div class="section-title">📋 Задачи <span class="section-badge" id="taskBadge">0</span></div>
+    </div>
+    <div class="filters" id="tFilters">
+      <div class="fchip active" data-tf="all">Все</div>
+      <div class="fchip" data-tf="in-progress">В работе</div>
+      <div class="fchip" data-tf="new">Новые</div>
+      <div class="fchip" data-tf="review">На проверке</div>
+      <div class="fchip" data-tf="overdue">Просрочено</div>
+    </div>
+    <div class="section-body" id="tasksBox"><div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Нажмите «Загрузить»</div></div></div>
+  </div>
+</div>
+
+<div class="ov" id="ov" onclick="closeDrill()"></div>
+<div class="dpanel" id="dp">
+  <div class="dhead">
+    <div class="dtitle" id="dpTitle">—</div>
+    <div class="dcls" onclick="closeDrill()">✕</div>
+  </div>
+  <div class="dmeta" id="dpMeta"></div>
+  <div class="dbody" id="dpBody"><div class="empty"><div class="empty-text">Выберите задачу</div></div></div>
+</div>
+
+<div class="modal-ov" id="configOv">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title">Настройки</div>
+      <div class="dcls" onclick="closeConfig()">✕</div>
+    </div>
+    <div class="modal-body">
+      <label>Вебхук Дакара (входящий)</label>
+      <input type="text" id="hookInput" placeholder="https://dakar.bitrix24.ru/rest/1/xxxxx/"/>
+      <div class="hint">CRM → Вебхуки → Входящий webhook (права: task, im, user)</div>
+      <label>Твой ID в Дакаре</label>
+      <input type="text" id="myIdInput" placeholder="123"/>
+      <label>Сотрудники под контролем (ID через запятую)</label>
+      <input type="text" id="empIdsInput" placeholder="10,20,30"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeConfig()">Отмена</button>
+      <button class="btn primary" onclick="saveConfig()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var HOOK='https://dakar.bitrix24.ru/rest/103557/r4nxtoa2kpm2iu5x/',
+    MY_ID='103557',
+    EMP_IDS=[101861,15378,68370,15394],
+    PERIOD_DAYS=30,
+    activeTasks=[],closedCount=0,allMentions=[],seenComments={},
+    mentionFilter='all',taskFilter='all',panelOpen=false,
+    taskChatCache={};
+var NAMES={'103557':'Предеин А.','101861':'Забиров Т.','15378':'Макаров В.','68370':'Соколовский А.','15394':'Приходько К.'};
+
+function loadConfig(){
+  try{var h=localStorage.getItem('dk_hook');if(h)HOOK=h}catch(e){}
+  try{var m=localStorage.getItem('dk_myid');if(m)MY_ID=m}catch(e){}
+  try{var e=localStorage.getItem('dk_empids');if(e)EMP_IDS=e.split(',').map(Number).filter(Boolean)}catch(e){}
+}
+function saveConfig(){
+  HOOK=document.getElementById('hookInput').value.trim();
+  MY_ID=document.getElementById('myIdInput').value.trim();
+  EMP_IDS=document.getElementById('empIdsInput').value.split(',').map(function(s){return Number(s.trim())}).filter(Boolean);
+  try{localStorage.setItem('dk_hook',HOOK)}catch(e){}
+  try{localStorage.setItem('dk_myid',MY_ID)}catch(e){}
+  try{localStorage.setItem('dk_empids',EMP_IDS.join(','))}catch(e){}
+  closeConfig();
+}
+function openConfig(){
+  document.getElementById('hookInput').value=HOOK;
+  document.getElementById('myIdInput').value=MY_ID;
+  document.getElementById('empIdsInput').value=EMP_IDS.join(', ');
+  document.getElementById('configOv').classList.add('show');
+}
+function closeConfig(){document.getElementById('configOv').classList.remove('show')}
+document.getElementById('configOv').addEventListener('click',function(e){if(e.target===this)closeConfig()});
+
+function setStatus(msg,loading,isError,isWarn){
+  var el=document.getElementById('statusBar');
+  el.className='status-bar'+(isError?' error':'')+(isWarn?' warn':'');
+  el.innerHTML=(loading?'<div class="sloader"></div> ':'')+esc(msg);
+}
+
+function bxPost(method,body){
+  if(!HOOK)return Promise.resolve({error:'Вебхук не настроен'});
+  var u='/api/'+method+'?hook='+encodeURIComponent(HOOK.trim());
+  return fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})})
+    .then(function(r){
+      if(!r.ok) return {error:'HTTP '+r.status};
+      return r.json();
+    })
+    .catch(function(e){return{error:e.message}});
+}
+
+function fetchTasksPaginated(filterObj,selectArr){
+  var all=[],start=0;
+  function step(){
+    return bxPost('tasks.task.list',{filter:filterObj,select:selectArr,start:start})
+    .then(function(r){
+      if(r.error){console.warn('[tasks] error:',r.error);return all}
+      var tasks=(r&&r.result&&r.result.tasks)||[];
+      all=all.concat(tasks);
+      if(r&&r.next&&tasks.length>=50){start=r.next;return step()}
+      return all;
+    });
+  }
+  return step();
+}
+
+function loadData(){
+  if(!HOOK){openConfig();return}
+  if(!MY_ID||!EMP_IDS.length){openConfig();return}
+  var btn=document.getElementById('loadBtn');
+  btn.disabled=true;btn.textContent='...';
+  activeTasks=[];closedCount=0;allMentions=[];taskChatCache={};
+
+  var dFrom=new Date();dFrom.setDate(dFrom.getDate()-PERIOD_DAYS);
+  var dateFrom=dFrom.toISOString().substring(0,10);
+  var allIds=EMP_IDS.slice();
+  if(MY_ID&&allIds.indexOf(Number(MY_ID))===-1)allIds.push(Number(MY_ID));
+
+  // CHAT_ID → im.dialog.messages.get (не im.message.list!)
+  var sel=['ID','TITLE','RESPONSIBLE_ID','STATUS','STAGE_ID','CREATED_DATE','CLOSED_DATE','DEADLINE','DESCRIPTION','CHAT_ID'];
+
+  setStatus('1/3 — Загрузка задач...',true);
+
+  fetchTasksPaginated({'RESPONSIBLE_ID':allIds,'!STATUS':[5,6,7],'>=CREATED_DATE':dateFrom},sel)
+  .then(function(tasks){
+    activeTasks=tasks||[];
+    console.log('[load] tasks:',activeTasks.length,'loaded. CHAT_ID sample:', activeTasks[0]?activeTasks[0].chatId||activeTasks[0].CHAT_ID:'none');
+
+    // Extract mentions from task descriptions
+    extractTaskMentions(activeTasks);
+
+    setStatus('2/3 — Загрузка чатов задач (im.dialog.messages.get)...',true);
+    return loadAllTaskChats(activeTasks);
+  })
+  .then(function(chatResults){
+    console.log('[load] task chats loaded:', chatResults);
+
+    setStatus('3/3 — Считаем закрытые...',true);
+    return bxPost('tasks.task.list',{filter:{'RESPONSIBLE_ID':allIds,'STATUS':5,'>=CLOSED_DATE':dateFrom},select:['ID']});
+  })
+  .then(function(closedR){
+    closedCount=(closedR&&!closedR.error&&closedR.result&&closedR.result.tasks)?closedR.result.tasks.length:0;
+
+    allMentions.sort(function(a,b){return (b.date||'').localeCompare(a.date||'')});
+    btn.disabled=false;btn.textContent='Загрузить';
+
+    var chatM=allMentions.filter(function(m){return m.type==='chat'}).length;
+    var taskM=allMentions.filter(function(m){return m.type==='task'}).length;
+    var parts=[activeTasks.length+' акт.', closedCount+' закр.', allMentions.length+' упом.'];
+
+    if(chatM===0&&activeTasks.length>0){
+      setStatus(parts.join(', ')+' — чаты задач не загружены (нужен im в вебхуке)',false,false,true);
+    } else {
+      setStatus('Готово: '+parts.join(', '),false);
+    }
+    renderAll();
+  })
+  .catch(function(e){
+    btn.disabled=false;btn.textContent='Загрузить';
+    setStatus('Ошибка: '+e.message,true,true);
+    console.error('[loadData] fatal:',e);
+  });
+}
+
+// --- Упоминания из описаний задач ---
+function extractTaskMentions(tasks){
+  var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
+  tasks.forEach(function(t){
+    var desc=t.description||'';
+    if(tag.test(desc)){
+      tag.lastIndex=0;
+      var text=desc.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+      text=text.replace(tag,'<mark>@'+esc(NAMES[MY_ID]||'#'+MY_ID)+'</mark>');
+      allMentions.push({
+        type:'task',taskId:t.id||t.ID,
+        title:t.title||t.TITLE,
+        text:truncate(text,200),
+        date:(t.createdDate||t.CREATED_DATE||'').substring(0,16),
+        key:'d_'+(t.id||t.ID)
+      });
+    }
+  });
+}
+
+// --- Чаты задач: im.dialog.messages.get по CHAT_ID каждой задачи ---
+function loadAllTaskChats(tasks){
+  if(!tasks||!tasks.length)return Promise.resolve(0);
+  var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
+  var batchSize=5;
+  var idx=0;
+  var totalLoaded=0;
+
+  function processBatch(){
+    var batch=tasks.slice(idx,idx+batchSize);
+    if(!batch.length)return Promise.resolve(totalLoaded);
+    idx+=batchSize;
+
+    var promises=batch.map(function(t){
+      var tid=t.id||t.ID;
+      var chatId=t.chatId||t.CHAT_ID;
+      if(!chatId){
+        console.log('[chat] task '+tid+': no CHAT_ID, skipping');
+        return Promise.resolve(0);
+      }
+
+      return bxPost('im.dialog.messages.get',{DIALOG_ID:'chat'+chatId,LIMIT:50})
+      .then(function(r){
+        if(r.error){
+          console.warn('[chat] task '+tid+' (chat '+chatId+'): '+r.error);
+          return 0;
+        }
+        var raw=r.result;
+        var msgs=raw&&raw.messages;
+        if(!msgs){taskChatCache[tid]=[];return 0}
+        msgs=Array.isArray(msgs)?msgs:[];
+        taskChatCache[tid]=msgs;
+        totalLoaded+=msgs.length;
+
+        // Ищем упоминания [USER=xxx] в сообщениях чата задачи
+        msgs.forEach(function(m){
+          var mText=m.text||'';
+          if(!mText||!tag.test(mText))return;
+          tag.lastIndex=0;
+
+          var mKey='chat_'+tid+'_'+(m.id||m.ID);
+          // Нет дубликатов
+          for(var i=0;i<allMentions.length;i++){if(allMentions[i].key===mKey)return}
+
+          var cleanText=mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+          cleanText=cleanText.replace(tag,'<mark>@'+esc(NAMES[MY_ID]||'#'+MY_ID)+'</mark>');
+          var dateStr=(m.date||'').substring(0,16).replace('T',' ');
+          var fromId=m.author_id||m.from_id||m.authorId||0;
+          var fromName=NAMES[String(fromId)]||('#'+fromId);
+
+          allMentions.push({
+            type:'chat',taskId:tid,chatId:chatId,
+            title:'Чат: '+(t.title||t.TITLE),
+            fromName:fromName,
+            text:truncate(cleanText,200),
+            date:dateStr,
+            key:mKey
+          });
+        });
+        return msgs.length;
+      })
+      .catch(function(e){
+        console.warn('[chat] task '+tid+' fetch error:',e.message);
+        return 0;
+      });
+    });
+
+    return Promise.all(promises).then(function(){return processBatch()});
+  }
+
+  return processBatch();
+}
+
+// === Drill panel ===
+document.getElementById('tasksBox').addEventListener('click',function(e){
+  var row=e.target.closest('.task-row');if(!row)return;
+  openTaskDrill(Number(row.getAttribute('data-tid')));
+});
+document.getElementById('mentionsBox').addEventListener('click',function(e){
+  var m=e.target.closest('.mention');if(!m)return;
+  var tid=m.getAttribute('data-tid');
+  if(tid)openTaskDrill(Number(tid));
+});
+
+function openTaskDrill(tid){
+  var task=null;
+  activeTasks.forEach(function(t){if(Number(t.id||t.ID)===tid)task=t});
+  if(!task)return;
+  seenComments['d_'+tid]=true;saveSeen();
+
+  var stage=getStage(task);
+  var respId=task.responsibleId||task.RESPONSIBLE_ID;
+  var dl=(task.deadline||task.DEADLINE||'').substring(0,16);
+  var od=isOverdue(task);
+  var chatId=task.chatId||task.CHAT_ID;
+  var base=HOOK?HOOK.split('/rest/')[0]:'';
+
+  document.getElementById('dpTitle').textContent=task.title||task.TITLE;
+  document.getElementById('dpMeta').innerHTML=
+    '<div class="dm-item"><div class="dm-lbl">Статус</div><div class="dm-val" style="color:'+stage.color+'">'+stage.name+'</div></div>'+
+    '<div class="dm-item"><div class="dm-lbl">Ответственный</div><div class="dm-val">'+esc(NAMES[String(respId)]||('#'+respId))+'</div></div>'+
+    '<div class="dm-item"><div class="dm-lbl">Дедлайн</div><div class="dm-val" style="color:'+(od?'var(--red)':'var(--text)')+'">'+(dl||'—')+'</div></div>'+
+    '<div class="dm-item"><div class="dm-lbl">Создана</div><div class="dm-val">'+((task.createdDate||task.CREATED_DATE||'').substring(0,10))+'</div></div>'+
+    (base?'<div class="dm-item"><div class="dm-lbl">Битрикс</div><div class="dm-val"><a href="'+base+'/company/personal/user/'+MY_ID+'/tasks/task/view/'+tid+'/" target="_blank">↗ открыть #'+tid+'</a></div></div>':'');
+
+  // Panel body: description + task chat
+  var desc=(task.description||task.DESCRIPTION||'').trim();
+  var html='';
+
+  if(desc){
+    html+='<div class="dsection"><div class="dsection-title"><span class="ds-dot blue"></span>Описание</div><div class="ddesc">'+desc+'</div></div>';
+  }
+
+  // Чат задачи (im.message.list по CHAT_ID)
+  html+='<div class="dsection" id="chatSection">';
+  if(chatId){
+    html+='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div class="loading"><div class="ring"></div>Загрузка чата...</div>';
+  } else {
+    html+='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div class="derror">У задачи нет CHAT_ID — чат не привязан</div>';
+  }
+  html+='</div>';
+
+  document.getElementById('dpBody').innerHTML=html;
+  openPanel();
+
+  // Загрузка чата задачи
+  if(!chatId)return;
+
+  // Если уже кэширован — рендерим сразу
+  if(taskChatCache[tid]){
+    renderTaskChat(tid,taskChatCache[tid]);
+    return;
+  }
+
+  bxPost('im.dialog.messages.get',{DIALOG_ID:'chat'+chatId,LIMIT:50})
+  .then(function(r){
+    if(!r){
+      showChatError('Нет ответа от API');
+      return;
+    }
+    if(r.error){
+      showChatError(r.error_description||r.error);
+      return;
+    }
+    var raw=r.result;
+    var msgs=raw&&raw.messages;
+    if(!msgs){
+      taskChatCache[tid]=[];
+      showChatError('Чат задачи пуст или недоступен');
+      return;
+    }
+    msgs=Array.isArray(msgs)?msgs:[];
+    taskChatCache[tid]=msgs;
+    renderTaskChat(tid,msgs);
+  })
+  .catch(function(err){
+    showChatError(err.message||'Ошибка сети');
+  });
+}
+
+function showChatError(errMsg){
+  var sec=document.getElementById('chatSection');
+  if(!sec)return;
+  sec.innerHTML='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div class="derror">Не удалось загрузить чат: <code>'+esc(errMsg)+'</code><br><span style="color:var(--text3);font-size:11px">Для чатов задач нужно право «Чат и уведомления (im)» в вебхуке</span></div>';
+  console.warn('[taskChat] error:',errMsg);
+}
+
+function renderTaskChat(tid,msgs){
+  var sec=document.getElementById('chatSection');
+  if(!sec)return;
+
+  if(!msgs||!msgs.length){
+    sec.innerHTML='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div style="color:var(--text3);font-size:12px;padding:8px 0">В чате задач нет сообщений</div>';
+    return;
+  }
+
+  // Сортируем по дате (старые сверху)
+  msgs.sort(function(a,b){return(a.date||'').localeCompare(b.date||'')});
+
+  var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
+  var html='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи ('+msgs.length+' сообщ.)</div>';
+
+  msgs.forEach(function(m){
+    var mText=m.text||'';
+
+    // Системные сообщения (создание задачи, смена статуса и т.д.)
+    var isSystem=!!(m.system||m.SYSTEM||m.event_id||m.MESSAGE_TYPE==='S');
+    if(isSystem){
+      var sysText=mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+      if(sysText){
+        html+='<div class="cmt-sys">'+esc(truncate(sysText,120))+'</div>';
+      }
+      return;
+    }
+
+    var isMention=false;
+    if(mText&&tag.test(mText)){tag.lastIndex=0;isMention=true}
+    if(isMention)mText=mText.replace(tag,'<mark>@я</mark>');
+
+    var dateStr=(m.date||'').substring(0,16).replace('T',' ');
+    var fromId=m.author_id||m.from_id||m.authorId||0;
+    var name=NAMES[String(fromId)]||('#'+fromId);
+
+    // Форматируем: убираем HTML, но оставляем текст читаемым
+    var displayText=mText?esc(mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()):'<span style="color:var(--text3)">—</span>';
+
+    html+='<div class="cmt '+(isMention?'highlight':'')+'"><div class="cmt-header"><div class="cmt-author">'+esc(name)+'</div><div class="cmt-time">'+esc(dateStr)+'</div></div><div class="cmt-text">'+displayText+'</div></div>';
+  });
+
+  sec.innerHTML=html;
+
+  // Прокрутить к первому упоминанию
+  setTimeout(function(){
+    var hl=sec.querySelector('.cmt.highlight');
+    if(hl)hl.scrollIntoView({behavior:'smooth',block:'center'});
+  },350);
+}
+
+function openClosedDrill(){
+  document.getElementById('dpTitle').textContent='Закрытые задачи';
+  document.getElementById('dpMeta').innerHTML='<div class="dm-item"><div class="dm-lbl">Период</div><div class="dm-val">'+PERIOD_DAYS+' дней</div></div><div class="dm-item"><div class="dm-lbl">Всего</div><div class="dm-val">'+closedCount+'</div></div>';
+  document.getElementById('dpBody').innerHTML='<div class="empty"><div class="empty-text">'+closedCount+' завершённых задач у '+EMP_IDS.length+' сотрудников за '+PERIOD_DAYS+' дней</div></div>';
+  openPanel();
+}
+function openPanel(){document.getElementById('dp').classList.add('open');document.getElementById('ov').classList.add('show');panelOpen=true}
+function closeDrill(){document.getElementById('dp').classList.remove('open');document.getElementById('ov').classList.remove('show');panelOpen=false}
+
+// === Filters ===
+document.getElementById('mFilters').addEventListener('click',function(e){
+  var chip=e.target.closest('.fchip');if(!chip)return;
+  mentionFilter=chip.getAttribute('data-mf');
+  this.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});
+  chip.classList.add('active');renderMentions();
+});
+document.getElementById('tFilters').addEventListener('click',function(e){
+  var chip=e.target.closest('.fchip');if(!chip)return;
+  taskFilter=chip.getAttribute('data-tf');
+  this.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});
+  chip.classList.add('active');renderTasks();
+});
+function filterMentions(f,el){
+  mentionFilter=f||'all';
+  if(el){el.parentElement.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});el.classList.add('active')}
+  renderMentions();
+}
+function filterTasks(f,el){
+  taskFilter=f||'all';
+  if(el){el.parentElement.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});el.classList.add('active')}
+  renderTasks();
+}
+
+// === Render ===
+function renderMentions(){
+  var box=document.getElementById('mentionsBox');
+  var list=allMentions;
+  if(mentionFilter==='new')list=allMentions.filter(function(m){return!seenComments[m.key]});
+  else if(mentionFilter==='task')list=allMentions.filter(function(m){return m.type==='task'});
+  else if(mentionFilter==='chat')list=allMentions.filter(function(m){return m.type==='chat'});
+  else if(mentionFilter==='read')list=allMentions.filter(function(m){return seenComments[m.key]});
+  document.getElementById('mentionBadge').textContent=allMentions.length;
+  if(!list.length){
+    box.innerHTML='<div class="empty"><div class="empty-icon">💬</div><div class="empty-text">'+
+      (allMentions.length?'Нет «'+mentionFilter+'»':'Упоминаний не найдено')+'</div></div>';return;
+  }
+  box.innerHTML=list.map(function(m){
+    var isNew=!seenComments[m.key];
+    var icon=m.type==='chat'?'chat':'task';
+    var iconChar=m.type==='chat'?'💬':'T';
+    var dataAttr='data-type="'+m.type+'" data-tid="'+m.taskId+'"';
+    var authorLine=m.fromName?'<span style="color:var(--cyan);font-weight:500;font-size:11px;margin-right:4px">'+esc(m.fromName)+':</span> ':'';
+    return '<div class="mention '+(isNew?'new':'read')+'" '+dataAttr+'><div class="mention-head"><div class="mention-source"><span class="src-icon '+icon+'">'+iconChar+'</span> '+esc(truncate(m.title,45))+'</div><div class="mention-time">'+esc(m.date)+'</div></div><div class="mention-text">'+authorLine+m.text+'</div></div>';
+  }).join('');
+}
+function renderTasks(){
+  var box=document.getElementById('tasksBox');
+  var list=activeTasks;
+  if(taskFilter==='in-progress')list=activeTasks.filter(function(t){return getStage(t).id==='in-progress'});
+  else if(taskFilter==='new')list=activeTasks.filter(function(t){return getStage(t).id==='new'});
+  else if(taskFilter==='review')list=activeTasks.filter(function(t){return getStage(t).id==='review'});
+  else if(taskFilter==='overdue')list=activeTasks.filter(isOverdue);
+  document.getElementById('taskBadge').textContent=activeTasks.length;
+  if(!list.length){
+    box.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Нет задач</div></div>';return;
+  }
+  list.sort(function(a,b){
+    var oa=isOverdue(a)?0:1,ob=isOverdue(b)?0:1;
+    if(oa!==ob)return oa-ob;
+    return(a.deadline||a.DEADLINE||'').localeCompare(b.deadline||b.DEADLINE||'');
+  });
+  box.innerHTML=list.map(function(t){
+    var stage=getStage(t),od=isOverdue(t),tid=t.id||t.ID;
+    var respId=t.responsibleId||t.RESPONSIBLE_ID;
+    var dl=(t.deadline||t.DEADLINE||'').substring(0,10);
+    var chatId=t.chatId||t.CHAT_ID;
+    var chatHint=chatId?'<span style="color:var(--purple);font-size:10px">💬'+chatId+'</span>':'';
+    return '<div class="task-row" data-tid="'+tid+'"><div class="task-dot '+(od?'overdue':stage.id)+'"></div><div class="task-info"><div class="task-title">'+esc(truncate(t.title||t.TITLE,70))+'</div><div class="task-meta"><span class="emp">'+esc(NAMES[String(respId)]||('#'+respId))+'</span><span class="stage" style="color:'+stage.color+'">'+stage.name+'</span><span class="deadline '+(od?'over':'')+'">'+(dl||'—')+'</span>'+chatHint+'</div></div></div>';
+  }).join('');
+}
+function renderKPI(){
+  var newM=allMentions.filter(function(m){return!seenComments[m.key]}).length;
+  var inWork=activeTasks.filter(function(t){return getStage(t).id==='in-progress'}).length;
+  var overdue=activeTasks.filter(isOverdue).length;
+  document.getElementById('kpiTotal').textContent=activeTasks.length;
+  document.getElementById('kpiInWork').textContent=inWork;
+  document.getElementById('kpiOverdue').textContent=overdue;
+  document.getElementById('kpiMentions').textContent=allMentions.length;
+  var newEl=document.getElementById('kpiMentionsNew');
+  if(newM>0){newEl.textContent='+'+newM;newEl.style.display='inline'}
+  else{newEl.textContent='';newEl.style.display='none'}
+  document.getElementById('kpiDone').textContent=closedCount;
+}
+function renderAll(){renderKPI();renderMentions();renderTasks()}
+
+function getStage(t){
+  var s=String(t.status||t.STATUS||'0');
+  if(s==='2')return{id:'new',name:'Новая',color:'var(--accent)'};
+  if(s==='3')return{id:'in-progress',name:'В работе',color:'var(--orange)'};
+  if(s==='4')return{id:'review',name:'На проверке',color:'var(--yellow)'};
+  return{id:'new',name:'Новая',color:'var(--accent)'};
+}
+function isOverdue(t){
+  var dl=t.deadline||t.DEADLINE;if(!dl)return false;
+  return new Date(dl)<new Date();
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function truncate(s,n){if(!s)return '';s=String(s).trim();return s.length<=n?s:s.substring(0,n-1)+'...'}
+function loadSeen(){try{seenComments=JSON.parse(localStorage.getItem('dk_seen')||'{}')}catch(e){seenComments={}}}
+function saveSeen(){try{localStorage.setItem('dk_seen',JSON.stringify(seenComments))}catch(e){}}
+
+loadConfig();loadSeen();
+if(!localStorage.getItem('dk_hook')){
+  try{localStorage.setItem('dk_hook',HOOK);localStorage.setItem('dk_myid',MY_ID);localStorage.setItem('dk_empids',EMP_IDS.join(','))}catch(e){}
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    if(panelOpen){closeDrill();return}
+    if(document.getElementById('configOv').classList.contains('show')){closeConfig();return}
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Тест чатов задач — Дакар</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Courier New',monospace;background:#0a0d14;color:#e8ecf4;padding:20px;font-size:13px;line-height:1.6}
+h1{color:#ff8c42;margin-bottom:8px}
+h2{color:#00d4ff;margin:20px 0 8px;font-size:14px}
+input{width:100%;padding:8px;background:#181d2a;border:1px solid rgba(255,255,255,.08);border-radius:6px;color:#e8ecf4;font-size:13px;margin-bottom:8px}
+button{padding:10px 20px;background:#00d4ff;color:#000;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;margin:4px 0}
+button:hover{opacity:.85}
+.tb{background:#10141e;border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:16px;margin-bottom:12px}
+pre{background:#181d2a;padding:12px;border-radius:6px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;font-size:11px;max-height:400px;overflow-y:auto;margin-top:8px;color:#8892a8}
+.ok{color:#22d47e}.err{color:#ff4f6a}
+.cmt{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.cmt b{color:#00d4ff}.cmt .t{color:#4a5268;font-size:11px}
+</style>
+</head>
+<body>
+<h1>🔧 Тест: im.dialog.messages.get</h1>
+<div class="tb">
+  <input id="hook" value="https://dakar.bitrix24.ru/rest/103557/r4nxtoa2kpm2iu5x/" />
+  <button onclick="testChat()">▶ Тест: чат chat135845 (задача #8255)</button>
+  <button onclick="testChat2()">▶ Тест: чат chat135353 (групповой)</button>
+  <button onclick="testTaskList()">▶ Тест: задачи + CHAT_ID + сообщения</button>
+  <button onclick="testMentions()">▶ Тест: поиск [USER=103557]</button>
+</div>
+<div id="out"></div>
+<script>
+var H=document.getElementById('hook').value.trim().replace(/\/$/,'')+'/';
+function api(m,b){return fetch(H+m+'.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})}).then(r=>r.json())}
+function pre(d){return '<pre>'+JSON.stringify(d,null,2).substring(0,3000)+'</pre>'}
+
+function testChat(){
+  var o=document.getElementById('out');
+  o.innerHTML='<h2>im.dialog.messages.get — chat135845</h2>⏳...';
+  api('im.dialog.messages.get',{DIALOG_ID:'chat135845',LIMIT:10}).then(d=>{
+    if(d.error){o.innerHTML='<h2>❌ Ошибка</h2>'+pre(d);return}
+    var msgs=d.result.messages||[];
+    o.innerHTML='<h2>✅ '+msgs.length+' сообщений</h2>'+msgs.map(m=>
+      '<div class="cmt"><b>#'+m.id+'</b> from='+m.author_id+' <span class="t">'+(m.date||'').substring(0,16)+'</span><br>'+(m.text||'[файл/системное]').replace(/</g,'&lt;').substring(0,200))+'</div>'
+    ).join('');
+  });
+}
+
+function testChat2(){
+  var o=document.getElementById('out');
+  o.innerHTML='<h2>im.dialog.messages.get — chat135353</h2>⏳...';
+  api('im.dialog.messages.get',{DIALOG_ID:'chat135353',LIMIT:10}).then(d=>{
+    if(d.error){o.innerHTML='<h2>❌ Ошибка</h2>'+pre(d);return}
+    var msgs=d.result.messages||[];
+    o.innerHTML='<h2>✅ '+msgs.length+' сообщений</h2>'+msgs.map(m=>
+      '<div class="cmt"><b>#'+m.id+'</b> from='+m.author_id+' <span class="t">'+(m.date||'').substring(0,16)+'</span><br>'+(m.text||'[файл/системное]').replace(/</g,'&lt;').substring(0,200))+'</div>'
+    ).join('');
+  });
+}
+
+function testTaskList(){
+  var o=document.getElementById('out');
+  o.innerHTML='<h2>Задачи + CHAT_ID + сообщения</h2>⏳...';
+  api('tasks.task.list',{filter:{RESPONSIBLE_ID:[101861,15378,68370,15394],'!STATUS':[5,6,7],'>=CREATED_DATE':'2026-03-01'},select:['ID','TITLE','CHAT_ID'],start:0}).then(d=>{
+    if(d.error){o.innerHTML='<h2>❌</h2>'+pre(d);return}
+    var tasks=d.result.tasks||[];
+    var withChat=tasks.filter(t=>t.chatId);
+    o.innerHTML='<h2>✅ '+tasks.length+' задач, '+withChat.length+' с CHAT_ID</h2>';
+    // Для каждой задачи с CHAT_ID — запросить сообщения
+    var chain=Promise.resolve();
+    var html='';
+    withChat.slice(0,5).forEach(t=>{
+      chain=chain.then(()=>api('im.dialog.messages.get',{DIALOG_ID:'chat'+t.chatId,LIMIT:3}).then(r=>{
+        var msgs=r.result&&r.result.messages?r.result.messages.length:'ERR:'+r.error;
+        html+='<div class="cmt"><b>#'+t.id+'</b> CHAT_ID='+t.chatId+' — <span class="'+(typeof msgs==='number'?'ok':'err')+'">'+msgs+' сообщений</span> '+t.title.substring(0,40)+'</div>';
+        o.querySelector('h2').nextSibling&&o.children[1]?o.children[1].outerHTML='<div>'+html+'</div>':null;
+        // Update output
+        var h2=o.querySelector('h2');
+        h2.insertAdjacentHTML('afterend','<div id="chatresults">'+html+'</div>');
+        var el=document.getElementById('chatresults');if(el)el.outerHTML='<div>'+html+'</div>';
+      }));
+    });
+    // Simpler approach
+    Promise.all(withChat.slice(0,5).map(t=>
+      api('im.dialog.messages.get',{DIALOG_ID:'chat'+t.chatId,LIMIT:3})
+      .then(r=>({task:t,msgs:r.result&&r.result.messages?r.result.messages.length:'ERR:'+r.error}))
+    )).then(results=>{
+      o.innerHTML='<h2>✅ '+tasks.length+' задач, '+withChat.length+' с CHAT_ID</h2>'+
+        results.map(r=>{
+          var cls=typeof r.msgs==='number'?'ok':'err';
+          return '<div class="cmt"><b>#'+r.task.id+'</b> chat='+r.task.chatId+' — <span class="'+cls+'">'+r.msgs+' сообщений</span> '+r.task.title.substring(0,40)+'</div>';
+        }).join('')+pre(d);
+    });
+  });
+}
+
+function testMentions(){
+  var o=document.getElementById('out');
+  o.innerHTML='<h2>Поиск [USER=103557] в чатах задач</h2>⏳...';
+  api('tasks.task.list',{filter:{RESPONSIBLE_ID:[101861,15378,68370,15394],'!STATUS':[5,6,7],'>=CREATED_DATE':'2026-03-01'},select:['ID','TITLE','CHAT_ID'],start:0}).then(d=>{
+    var tasks=d.result.tasks.filter(t=>t.chatId);
+    var allMentions=[];
+    return Promise.all(tasks.slice(0,10).map(t=>
+      api('im.dialog.messages.get',{DIALOG_ID:'chat'+t.chatId,LIMIT:50})
+      .then(r=>{
+        var msgs=r.result&&r.result.messages||[];
+        msgs.forEach(m=>{
+          if((m.text||'').indexOf('103557')>=0){
+            allMentions.push({task:t,msg:m});
+          }
+        });
+        return msgs.length;
+      })
+    )).then(()=>allMentions);
+  }).then(mentions=>{
+    if(!mentions||!mentions.length){
+      o.innerHTML+='<h2>❌ Упоминаний не найдено</h2>';return;
+    }
+    o.innerHTML='<h2>✅ Найдено '+mentions.length+' упоминаний</h2>'+
+      mentions.map(m=>
+        '<div class="cmt"><b>Задача #'+m.task.id+'</b> '+m.task.title.substring(0,40)+'<br><b>msg #'+m.msg.id+'</b> from='+m.msg.author_id+' <span class="t">'+(m.msg.date||'').substring(0,16)+'</span><br>'+(m.msg.text||'').replace(/</g,'&lt;').substring(0,300)+'</div>'
+      ).join('');
+  });
+}
+</script>
+</body>
+</html>
