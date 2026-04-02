@@ -1236,10 +1236,15 @@
     padding: 10px 14px;
     border-top: 1px solid rgba(255,255,255,0.08);
     display: flex;
-    align-items: flex-end;
-    gap: 8px;
+    flex-direction: column;
+    gap: 0;
     flex-shrink: 0;
     background: rgba(20,23,32,0.5);
+  }
+  .chat-input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
   }
   .chat-input {
     flex: 1;
@@ -1572,11 +1577,13 @@
       </div>
       <div class="chat-input-bar" id="chatInputBar" style="display:none">
         <div id="replyQuoteArea"></div>
-        <textarea class="chat-input" id="chatInput" placeholder="Введите сообщение..." rows="1" onkeydown="handleChatKey(event)"></textarea>
-        <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">
-          <span class="send-icon">➤</span>
-          <span class="send-spinner"></span>
-        </button>
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chatInput" placeholder="Введите сообщение..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+          <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">
+            <span class="send-icon">➤</span>
+            <span class="send-spinner"></span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -2719,11 +2726,14 @@ function renderChatMessages(msgs) {
       html += '<div class="chat-date-sep">' + esc(formatDateRu(dateOnly)) + '</div>';
     }
 
-    var isSystem = !!(m.system || m.SYSTEM || m.event_id || (m.params && m.params.MESSAGE_TYPE === 'S'));
+    var isSystem = !!(m.system || m.SYSTEM || m.event_id);
+    var mParams = m.params;
+    if (typeof mParams === 'string') { try { mParams = JSON.parse(mParams); } catch(e) { mParams = null; } }
+    if (mParams && mParams.MESSAGE_TYPE === 'S') isSystem = true;
+    // Detect Bitrix24 bot system messages by content
+    if (!isSystem && /\[TIMESTAMP=/.test(mText) && /\[USER=\d+\]/.test(mText)) isSystem = true;
     if (isSystem || !m.author_id || m.author_id === 0) {
-      var sysText = stripHtml(mText).trim();
-      if (sysText) html += '<div class="chat-msg-sys">' + esc(truncate(sysText, 150)) + '</div>';
-      return;
+      return; // Hide all system messages with raw tags
     }
 
     var fromId = String(m.author_id || m.from_id || m.authorId || 0);
@@ -2740,7 +2750,7 @@ function renderChatMessages(msgs) {
       hasMention = true;
     }
 
-    var displayText = mText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    var displayText = cleanBitrixText(mText);
     if (!displayText) displayText = '';
     if (hasMention) {
       displayText = displayText.replace(mentionTag, '<span class="mention-highlight">@' + esc(NAMES[MY_ID] || '#' + MY_ID) + '</span>');
@@ -2761,7 +2771,8 @@ function renderChatMessages(msgs) {
       }
     }
 
-    var replyBtn = '<button class="reply-btn" onclick="event.stopPropagation();setReplyTo(' + (m.id || m.ID) + ',\'' + esc(userName).replace(/'/g, "\\'") + '\',\'' + esc(displayText).replace(/'/g, "\\'").substring(0, 80) + '\')" title="Ответить">\u21A9</button>';
+    var replyPlain = mText.replace(/<[^>]*>/g, ' ').replace(/\[USER=\d+\][^\[]*\[\/USER\]/gi, '').replace(/\[TIMESTAMP=[^\]]*\][^\[]*\[\/TIMESTAMP\]/gi, '').replace(/\[[A-Z_]+=[^\]]*\][^\[]*\[\/[A-Z_]+\]/gi, '').replace(/\s+/g, ' ').trim().substring(0, 60);
+    var replyBtn = '<button class="reply-btn" onclick="event.stopPropagation();setReplyTo(' + (m.id || m.ID) + ',\'' + esc(userName).replace(/'/g, "\\'") + '\',\'' + esc(replyPlain).replace(/'/g, "\\'") + '\')" title="Ответить">\u21A9</button>';
 
     html += '<div class="chat-msg' + (isSelf ? ' self' : '') + '">' +
       '<div class="chat-msg-avatar" style="background:' + userColor + '">' + esc(userLetter) + '</div>' +
@@ -2772,7 +2783,7 @@ function renderChatMessages(msgs) {
       '</div>' +
       '<div class="chat-msg-bubble' + (hasMention ? ' mention-bubble' : '') + '">' +
       replyBtn +
-      (displayText ? esc(displayText) : '') +
+      (displayText ? displayText : '') +
       attachHtml +
       '</div></div></div>';
   });
@@ -2795,9 +2806,10 @@ function setReplyTo(msgId, authorName, quoteText) {
   replyToMsgId = msgId;
   replyToText = quoteText || '';
   var area = document.getElementById('replyQuoteArea');
+  var shortQuote = esc(replyToText).length > 50 ? esc(replyToText).substring(0, 47) + '...' : esc(replyToText);
   if (area) {
     area.innerHTML = '<div class="reply-quote">' +
-      '<span class="reply-quote-text">\u21A9 ' + esc(authorName) + ': ' + esc(replyToText) + '</span>' +
+      '<span class="reply-quote-text">\u00AB' + shortQuote + '\u00BB</span>' +
       '<button class="reply-quote-close" onclick="clearReplyQuote()">&times;</button>' +
       '</div>';
   }
@@ -3014,6 +3026,23 @@ function stripHtml(html) {
   return String(html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function cleanBitrixText(text) {
+  if (!text) return '';
+  // Remove [USER=ID]Name[/USER] → Name
+  text = text.replace(/\[USER=(\d+)\]([^\[]*)\[\/USER\]/gi, '$2');
+  // Remove [TIMESTAMP=... FORMAT=...]...[/TIMESTAMP] → empty
+  text = text.replace(/\[TIMESTAMP=[^\]]*\][^\[]*\[\/TIMESTAMP\]/gi, '');
+  // Remove [TASK=ID]...[/TASK] → empty
+  text = text.replace(/\[TASK=\d+\][^\[]*\[\/TASK\]/gi, '');
+  // Remove any remaining [XXX=...]...[/XXX] → empty
+  text = text.replace(/\[[A-Z_]+=[^\]]*\][^\[]*\[\/[A-Z_]+\]/gi, '');
+  // Remove remaining HTML tags
+  text = text.replace(/<[^>]*>/g, ' ');
+  // Clean up whitespace
+  text = text.replace(/\s+/g, ' ').trim();
+  return text;
+}
+
 function saveSeen() {
   try { localStorage.setItem('dk_seen', JSON.stringify(seenKeys)); } catch (e) {}
 }
@@ -3083,6 +3112,7 @@ document.addEventListener('keydown', function(e) {
    INIT
    ================================================================ */
 initConfig();
+updateApiCounter();
 renderAll();
 </script>
 </body>
