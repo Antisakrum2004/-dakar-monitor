@@ -2,714 +2,2175 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23ff8c42'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>D</text></svg>">
-<title>Дакар · Мониторинг задач</title>
+<title>Дакар · Мониторинг</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0d14;--bg2:#10141e;--bg3:#181d2a;--glass:rgba(18,21,31,.55);--glass-border:rgba(255,255,255,.06);--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.12);--text:#e8ecf4;--text2:#8892a8;--text3:#4a5268;--accent:#00d4ff;--green:#22d47e;--yellow:#f5a623;--red:#ff4f6a;--orange:#ff8c42;--cyan:#22d4ee;--purple:#7c5cfc;--mono:'JetBrains Mono',monospace;--radius:10px}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
-[data-v-inspector],iframe[src*="vercel"],.vercel-toast,[class*="__vercel"]{display:none!important;opacity:0!important;pointer-events:none!important;height:0!important;width:0!important;position:fixed!important;top:-9999px!important;z-index:-1!important}
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+/* ============================================================
+   CSS VARIABLES — Dark Messenger Theme
+   ============================================================ */
+:root {
+  --bg-primary: #141720;
+  --bg-secondary: #1a1f2e;
+  --bg-tertiary: #232a3b;
+  --bg-chat-wallpaper: #1a2332;
+  --bg-message-bubble: #2a3040;
+  --bg-message-self: #1e3a5f;
+  --text-primary: #e8ecf4;
+  --text-secondary: #8892a8;
+  --text-muted: #4a5268;
+  --accent: #00abe6;
+  --accent-glow: rgba(0,171,230,0.15);
+  --mention-bg: #3d3800;
+  --mention-text: #ffd740;
+  --green: #22d47e;
+  --orange: #ff8c42;
+  --yellow: #f5a623;
+  --red: #ff4f6a;
+  --purple: #7c5cfc;
+  --cyan: #22d4ee;
+  --border: rgba(255,255,255,0.06);
+  --border-light: rgba(255,255,255,0.1);
+  --mono: 'JetBrains Mono', monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
-.header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--glass-border);background:var(--bg2);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
-.brand{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-.brand .bdot{width:8px;height:8px;border-radius:50%;background:var(--orange)}
-.brand .bsub{color:var(--text3);font-weight:400;font-size:11px}
-.header-actions{display:flex;align-items:center;gap:8px}
-.btn{padding:8px 16px;border:1px solid var(--glass-border);border-radius:6px;background:rgba(18,21,31,.6);color:var(--text);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.btn:hover{border-color:var(--border2);background:rgba(18,21,31,.8)}
-.btn.primary{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
-.btn.primary:hover{opacity:.85}
-.btn.primary:disabled{opacity:.4;cursor:not-allowed}
-.btn:disabled{opacity:.35;cursor:not-allowed}
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
 
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px 24px;border-bottom:1px solid var(--glass-border)}
-@media(max-width:700px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
-.kpi{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:14px 16px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,opacity .15s}
-.kpi:hover{border-color:var(--border2);opacity:.88}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.kpi.orange::before{background:var(--orange)}.kpi.green::before{background:var(--green)}.kpi.red::before{background:var(--red)}.kpi.cyan::before{background:var(--cyan)}.kpi.purple::before{background:var(--purple)}
-.kpi-val{font-family:var(--mono);font-size:28px;font-weight:700;line-height:1}
-.kpi-sub{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent);margin-left:4px}
-.kpi-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
-.kpi.hint{font-size:10px;color:var(--text3);margin-top:2px}
+/* Hide Vercel overlays */
+[data-v-inspector], iframe[src*="vercel"], .vercel-toast,
+[class*="__vercel"] { display: none !important; opacity: 0 !important;
+  pointer-events: none !important; height: 0 !important; width: 0 !important;
+  position: fixed !important; top: -9999px !important; z-index: -1 !important; }
 
-.main{display:grid;grid-template-columns:1fr 1.4fr;gap:0;height:calc(100vh - 170px)}
-@media(max-width:900px){.main{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 170px)}}
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
 
-.section{border-right:1px solid var(--glass-border);display:flex;flex-direction:column}
-.section:last-child{border-right:none}
-.section-head{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--glass-border);flex-shrink:0}
-.section-title{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);display:flex;align-items:center;gap:8px}
-.section-badge{background:var(--orange);color:#000;font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;min-width:20px;text-align:center}
-.section-body{flex:1;overflow-y:auto;padding:0;-webkit-overflow-scrolling:touch}
+/* ============================================================
+   APP LAYOUT — 3-column messenger
+   ============================================================ */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
 
-.mention{padding:14px 20px;border-bottom:1px solid var(--glass-border);cursor:pointer;transition:background .1s;border-left:3px solid transparent}
-.mention:hover{background:rgba(79,139,255,.06);border-left-color:var(--purple)}
-.mention:active{background:rgba(79,139,255,.12);border-left-color:var(--accent)}
-.mention-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.mention-source{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px}
-.mention-source .src-icon{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
-.mention-source .src-icon.task{background:rgba(0,212,255,.15);color:var(--accent)}
-.mention-source .src-icon.chat{background:rgba(124,92,252,.15);color:var(--purple)}
-.mention-time{font-family:var(--mono);font-size:10px;color:var(--text3)}
-.mention-text{font-size:13px;color:var(--text);line-height:1.4}
-.mention-text mark{background:rgba(0,212,255,.2);color:var(--accent);border-radius:2px;padding:0 2px}
-.mention.new{border-left:3px solid var(--accent)}
-.mention.read{opacity:.55}
+/* --- Header --- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+}
+.brand-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-stat {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.header-stat .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.header-stat .dot.orange { background: var(--orange); }
+.header-stat .dot.red { background: var(--red); }
+.header-stat .dot.green { background: var(--green); }
+.header-stat .dot.purple { background: var(--purple); }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hbtn {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.hbtn:hover { background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-light); }
+.hbtn:active { transform: scale(0.94); }
+.hbtn.primary {
+  width: auto; padding: 0 14px;
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  gap: 6px;
+}
+.hbtn.primary:hover { opacity: 0.85; }
+.hbtn.primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.hbtn.primary .spinner {
+  width: 12px; height: 12px;
+  border: 2px solid transparent;
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+.hbtn.primary.loading .spinner { display: block; }
+.hbtn.primary.loading .btn-text { display: none; }
 
-.task-row{padding:12px 20px;border-bottom:1px solid var(--glass-border);cursor:pointer;transition:background .1s,border-color .1s;display:flex;align-items:center;gap:14px;border-left:3px solid transparent}
-.task-row:hover{background:rgba(79,139,255,.06);border-left-color:var(--accent)}
-.task-row:active{background:rgba(79,139,255,.12);border-left-color:var(--green)}
-.task-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.task-dot.new{background:var(--accent)}.task-dot.in-progress{background:var(--orange)}.task-dot.review{background:var(--yellow)}.task-dot.done{background:var(--green)}.task-dot.overdue{background:var(--red)}
-.task-info{flex:1;min-width:0}
-.task-title{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.task-meta{display:flex;align-items:center;gap:10px;margin-top:3px;font-size:11px;color:var(--text3)}
-.task-meta .emp{color:var(--cyan);font-weight:500}
-.task-meta .stage{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,.05);text-transform:uppercase;letter-spacing:.04em}
-.task-meta .deadline{color:var(--text3)}
-.task-meta .deadline.over{color:var(--red)}
+/* Polling indicator */
+.poll-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s ease-in-out infinite;
+  display: none;
+}
+.poll-dot.active { display: block; }
 
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none}.ov.show{display:block}
-.dpanel{position:fixed;right:0;top:0;bottom:0;width:520px;background:rgba(13,16,24,.92);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-left:1px solid var(--glass-border);z-index:200;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column}
-.dpanel.open{transform:translateX(0)}
-@media(max-width:600px){.dpanel{width:100%}}
-.dhead{padding:18px 22px;border-bottom:1px solid var(--glass-border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
-.dtitle{font-size:16px;font-weight:700;line-height:1.3;flex:1;margin-right:12px}
-.dcls{width:28px;height:28px;background:rgba(18,21,31,.6);border:1px solid var(--glass-border);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2);transition:all .15s;flex-shrink:0}
-.dcls:hover{border-color:var(--red);color:var(--red)}
-.dmeta{padding:14px 22px;border-bottom:1px solid var(--glass-border);display:flex;gap:20px;flex-wrap:wrap;font-size:12px;flex-shrink:0}
-.dm-item{display:flex;flex-direction:column;gap:2px}
-.dm-lbl{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
-.dm-val{color:var(--text);font-weight:600}
-.dm-val a{color:var(--accent);text-decoration:none}.dm-val a:hover{text-decoration:underline}
-.dbody{flex:1;overflow-y:auto;padding:0;-webkit-overflow-scrolling:touch}
-.dbody::-webkit-scrollbar{width:5px}.dbody::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.dsection{padding:14px 22px;border-bottom:1px solid var(--glass-border)}
-.dsection-title{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.dsection-title .ds-dot{width:6px;height:6px;border-radius:50%}
-.dsection-title .ds-dot.blue{background:var(--accent)}
-.dsection-title .ds-dot.green{background:var(--green)}
-.dsection-title .ds-dot.purple{background:var(--purple)}
-.ddesc{font-size:13px;color:var(--text2);line-height:1.6;word-break:break-word}
-.ddesc a{color:var(--accent)}
-.ddesc img{max-width:100%;border-radius:6px;margin:8px 0}
-.derror{font-size:12px;color:var(--red);padding:8px 0;line-height:1.5}
-.derror code{background:rgba(255,79,106,.1);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:11px}
+/* --- App body: left panel + right panel --- */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
 
-.cmt{padding:10px 22px;border-bottom:1px solid var(--glass-border)}
-.cmt-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.cmt-author{font-size:12px;font-weight:600;color:var(--text)}
-.cmt-time{font-family:var(--mono);font-size:10px;color:var(--text3)}
-.cmt-text{font-size:13px;color:var(--text2);line-height:1.5;word-break:break-word}
-.cmt-text mark{background:rgba(0,212,255,.2);color:var(--accent);border-radius:2px;padding:0 2px}
-.cmt.is-new{background:rgba(34,212,126,.04)}
-.cmt.highlight{background:rgba(0,212,255,.06);border-left:3px solid var(--accent)}
-.cmt-sys{font-size:11px;color:var(--text3);font-style:italic;padding:6px 22px;border-bottom:1px solid var(--glass-border)}
+/* ============================================================
+   LEFT PANEL
+   ============================================================ */
+.left-panel {
+  width: 300px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  z-index: 10;
+  transition: transform 0.3s ease;
+}
+.left-panel.hidden-mobile { transform: translateX(-100%); }
 
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.modal-ov.show{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--glass-border);border-radius:14px;width:520px;max-width:94vw;max-height:85vh;overflow-y:auto;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.5)}
-.modal-head{padding:18px 22px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.modal-title{font-family:var(--mono);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.modal-body{padding:20px 22px}
-.modal-body label{display:block;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;margin-top:14px}
-.modal-body label:first-child{margin-top:0}
-.modal-body input{width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--glass-border);border-radius:6px;color:var(--text);font-size:13px;font-family:var(--mono)}
-.modal-body input:focus{outline:none;border-color:var(--accent)}
-.modal-body .hint{font-size:10px;color:var(--text3);margin-top:4px}
-.modal-footer{padding:16px 22px;border-top:1px solid var(--glass-border);display:flex;justify-content:flex-end;gap:8px}
+/* KPI grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.kpi-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card:hover { border-color: var(--border-light); }
+.kpi-card:active { transform: scale(0.97); }
+.kpi-card .kpi-value {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+.kpi-card .kpi-new {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple);
+  margin-left: 3px;
+}
+.kpi-card .kpi-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+}
+.kpi-card.kpi-tasks .kpi-value { color: var(--orange); }
+.kpi-card.kpi-progress .kpi-value { color: var(--accent); }
+.kpi-card.kpi-overdue .kpi-value { color: var(--red); }
+.kpi-card.kpi-mentions .kpi-value { color: var(--purple); }
 
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:var(--text3);font-size:13px;text-align:center;gap:8px}
-.empty-icon{font-size:32px;opacity:.4}
-.empty-text{font-family:var(--mono);font-size:11px}
-.loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:10px;color:var(--text3);font-family:var(--mono);font-size:12px}
-.ring{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* Panel tabs */
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.panel-tab {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+}
+.panel-tab:hover { color: var(--text-secondary); background: rgba(255,255,255,0.02); }
+.panel-tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent);
+}
+.panel-tab .tab-badge {
+  display: inline-block;
+  background: var(--purple);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 4px;
+  vertical-align: middle;
+  min-width: 16px;
+}
 
-.filters{display:flex;gap:6px;padding:10px 20px;border-bottom:1px solid var(--glass-border);flex-wrap:wrap;flex-shrink:0}
-.fchip{padding:4px 10px;border:1px solid var(--glass-border);border-radius:12px;font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .1s;color:var(--text2);background:transparent;-webkit-user-select:none;user-select:none}
-.fchip:hover{border-color:var(--border2);color:var(--text)}
-.fchip:active{background:rgba(255,255,255,.06)}
-.fchip.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
-.fchip.active:hover{opacity:.85}
+/* Filter chips */
+.filter-bar {
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+.fchip {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: transparent;
+  white-space: nowrap;
+  user-select: none;
+  transition: all 0.12s;
+}
+.fchip:hover { border-color: var(--border-light); color: var(--text-primary); }
+.fchip.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 600;
+}
 
-.status-bar{padding:8px 20px;border-bottom:1px solid var(--glass-border);font-family:var(--mono);font-size:10px;color:var(--text3);display:flex;align-items:center;gap:8px;flex-shrink:0}
-.status-bar .sloader{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-.status-bar.error{color:var(--red);background:rgba(255,79,106,.06)}
-.status-bar.warn{color:var(--yellow)}
+/* Panel list */
+.panel-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --- Mention item --- */
+.mention-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+  border-left: 3px solid transparent;
+}
+.mention-item:hover { background: rgba(255,255,255,0.03); }
+.mention-item.unseen { border-left-color: var(--purple); }
+.mention-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.mention-content { flex: 1; min-width: 0; }
+.mention-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mention-chat-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mention-time {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.mention-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.mention-text mark {
+  background: var(--mention-bg);
+  color: var(--mention-text);
+  border-radius: 2px;
+  padding: 0 3px;
+}
+
+/* --- Task item --- */
+.task-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+  border-left: 3px solid transparent;
+}
+.task-item:hover { background: rgba(255,255,255,0.03); }
+.task-item.overdue { border-left-color: var(--red); }
+.task-status-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.task-status-dot.st-new { background: var(--cyan); }
+.task-status-dot.st-progress { background: var(--orange); }
+.task-status-dot.st-review { background: var(--yellow); }
+.task-status-dot.st-done { background: var(--green); }
+.task-status-dot.st-overdue { background: var(--red); }
+.task-content { flex: 1; min-width: 0; }
+.task-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.task-title-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.task-chat-icon {
+  font-size: 10px;
+  color: var(--purple);
+  flex-shrink: 0;
+}
+.task-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.task-meta-row .emp-name { color: var(--accent); font-weight: 500; }
+.task-meta-row .stage-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.05);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.task-meta-row .deadline { color: var(--text-muted); }
+.task-meta-row .deadline.over { color: var(--red); font-weight: 500; }
+
+/* ============================================================
+   RIGHT PANEL
+   ============================================================ */
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+/* --- Welcome state --- */
+.welcome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px;
+  text-align: center;
+}
+.welcome-icon { font-size: 48px; opacity: 0.3; }
+.welcome-title {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.welcome-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 300px;
+  line-height: 1.6;
+}
+.welcome-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+}
+.welcome-stat {
+  text-align: center;
+}
+.welcome-stat-val {
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.welcome-stat-lbl {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* --- Chat header --- */
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  min-height: 56px;
+}
+.chat-back {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.chat-back:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.chat-info { flex: 1; min-width: 0; }
+.chat-task-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-task-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1px;
+}
+.chat-task-meta .meta-status { font-weight: 500; }
+.chat-task-meta .meta-sep { color: var(--border-light); }
+.chat-open-link {
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.chat-open-link:hover { text-decoration: underline; }
+
+/* --- Chat messages area --- */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg-chat-wallpaper);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(0,171,230,0.03) 0%, transparent 70%),
+    radial-gradient(ellipse at 80% 20%, rgba(124,92,252,0.02) 0%, transparent 70%);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Date separator */
+.date-sep {
+  text-align: center;
+  padding: 12px 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  position: relative;
+}
+.date-sep::before,
+.date-sep::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 70px);
+  height: 1px;
+  background: var(--border);
+}
+.date-sep::before { left: 0; }
+.date-sep::after { right: 0; }
+
+/* Message row */
+.msg-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  max-width: 85%;
+  margin-bottom: 2px;
+}
+.msg-row.self { flex-direction: row; align-self: flex-end; }
+.msg-row.self .msg-avatar { display: none; }
+
+/* Message avatar */
+.msg-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.msg-body { display: flex; flex-direction: column; }
+.msg-row.self .msg-body { align-items: flex-end; }
+
+.msg-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 3px;
+  padding: 0 4px;
+}
+.msg-author {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+.msg-time {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+/* Message bubble */
+.msg-bubble {
+  background: var(--bg-message-bubble);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  word-break: break-word;
+  position: relative;
+  border-left: 3px solid transparent;
+}
+.msg-row.self .msg-bubble {
+  background: var(--bg-message-self);
+}
+.msg-bubble.mention-bubble {
+  border-left-color: var(--mention-text);
+}
+.msg-bubble mark {
+  background: var(--mention-bg);
+  color: var(--mention-text);
+  border-radius: 2px;
+  padding: 0 3px;
+}
+
+/* Attachment in message */
+.msg-attach {
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.msg-attach-icon { font-size: 14px; opacity: 0.6; }
+
+/* System message */
+.msg-system {
+  text-align: center;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+  max-width: 80%;
+  align-self: center;
+}
+
+/* No chat message */
+.no-chat-msg {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 40px;
+}
+
+/* Loading state in chat */
+.chat-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.ring {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ============================================================
+   STATUS BAR
+   ============================================================ */
+.status-bar {
+  height: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  z-index: 100;
+}
+.status-bar .status-loader {
+  width: 10px; height: 10px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.status-bar.error { color: var(--red); background: rgba(255,79,106,0.06); }
+.status-bar.warn { color: var(--yellow); }
+
+/* ============================================================
+   CONFIG MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  width: 480px;
+  max-width: 94vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+}
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.modal-close {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s;
+}
+.modal-close:hover { border-color: var(--red); color: var(--red); }
+.modal-body { padding: 16px 20px; }
+.modal-body label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+  margin-top: 14px;
+}
+.modal-body label:first-child { margin-top: 0; }
+.modal-body input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: var(--mono);
+}
+.modal-body input:focus { outline: none; border-color: var(--accent); }
+.modal-body .field-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+}
+.mbtn {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mbtn:hover { background: var(--bg-tertiary); }
+.mbtn.primary {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.mbtn.primary:hover { opacity: 0.85; }
+
+/* ============================================================
+   EMPTY STATES
+   ============================================================ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+  gap: 8px;
+}
+.empty-state .empty-icon { font-size: 28px; opacity: 0.35; }
+.empty-state .empty-text { font-family: var(--mono); font-size: 11px; }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.msg-row { animation: fadeIn 0.2s ease-out; }
+
+/* ============================================================
+   SKELETON LOADING
+   ============================================================ */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, rgba(255,255,255,0.06) 50%, var(--bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.skeleton-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.skeleton-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.skeleton-line { height: 12px; border-radius: 4px; }
+.skeleton-line.short { width: 60%; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 700px) {
+  .header-center { display: none; }
+  .left-panel {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 100%;
+    min-width: 100%;
+    z-index: 50;
+  }
+  .left-panel.hidden-mobile { transform: translateX(-100%); }
+  .right-panel { width: 100%; }
+  .msg-row { max-width: 92%; }
+  .modal { width: 100%; max-width: 100%; border-radius: 14px 14px 0 0; max-height: 90vh; margin-top: auto; }
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="brand">
-    <div class="bdot"></div>
-    <span>ДАКАР</span>
-    <span class="bsub">мониторинг задач</span>
+<div class="app">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <div class="header-left">
+      <div class="brand-dot"></div>
+      <span class="brand-name">ДАКАР</span>
+      <span class="brand-sub">мониторинг</span>
+    </div>
+    <div class="header-center">
+      <div class="header-stat"><div class="dot orange"></div><span id="hStatTasks">— задач</span></div>
+      <div class="header-stat"><div class="dot red" id="hStatOverdueDot" style="display:none"></div><span id="hStatOverdue"></span></div>
+      <div class="header-stat"><div class="dot purple"></div><span id="hStatMentions">— упом.</span></div>
+    </div>
+    <div class="header-right">
+      <div class="poll-dot" id="pollDot"></div>
+      <button class="hbtn" onclick="openConfig()" title="Настройки">⚙</button>
+      <button class="hbtn" onclick="manualRefresh()" title="Обновить">↻</button>
+      <button class="hbtn primary" id="loadBtn" onclick="loadData()">
+        <span class="btn-text">Загрузить</span>
+        <span class="spinner"></span>
+      </button>
+    </div>
   </div>
-  <div class="header-actions">
-    <button class="btn" onclick="openConfig()">⚙</button>
-    <button class="btn primary" id="loadBtn" onclick="loadData()">Загрузить</button>
+
+  <!-- ===== APP BODY ===== -->
+  <div class="app-body">
+
+    <!-- Left Panel -->
+    <div class="left-panel" id="leftPanel">
+
+      <!-- KPI Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-tasks" onclick="switchTab('tasks'); setTaskFilter('all')">
+          <div class="kpi-value" id="kpiTasks">—</div>
+          <div class="kpi-label">Активных</div>
+        </div>
+        <div class="kpi-card kpi-progress" onclick="switchTab('tasks'); setTaskFilter('in-progress')">
+          <div class="kpi-value" id="kpiProgress">—</div>
+          <div class="kpi-label">В работе</div>
+        </div>
+        <div class="kpi-card kpi-overdue" onclick="switchTab('tasks'); setTaskFilter('overdue')">
+          <div class="kpi-value" id="kpiOverdue">—</div>
+          <div class="kpi-label">Просрочено</div>
+        </div>
+        <div class="kpi-card kpi-mentions" onclick="switchTab('mentions')">
+          <div class="kpi-value"><span id="kpiMentions">—</span><span class="kpi-new" id="kpiMentionsNew"></span></div>
+          <div class="kpi-label">Упоминания</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="panel-tabs">
+        <div class="panel-tab active" data-tab="mentions" onclick="switchTab('mentions')">
+          💬 Упоминания <span class="tab-badge" id="tabMentionBadge" style="display:none">0</span>
+        </div>
+        <div class="panel-tab" data-tab="tasks" onclick="switchTab('tasks')">
+          📋 Задачи <span class="tab-badge" id="tabTaskBadge" style="display:none">0</span>
+        </div>
+      </div>
+
+      <!-- Mention filters -->
+      <div class="filter-bar" id="mentionFilters">
+        <div class="fchip active" data-mf="all" onclick="setMentionFilter('all')">Все</div>
+        <div class="fchip" data-mf="new" onclick="setMentionFilter('new')">Новые</div>
+        <div class="fchip" data-mf="read" onclick="setMentionFilter('read')">Прочитанные</div>
+      </div>
+
+      <!-- Task filters (hidden by default) -->
+      <div class="filter-bar" id="taskFilters" style="display:none">
+        <div class="fchip active" data-tf="all" onclick="setTaskFilter('all')">Все</div>
+        <div class="fchip" data-tf="new" onclick="setTaskFilter('new')">Новые</div>
+        <div class="fchip" data-tf="in-progress" onclick="setTaskFilter('in-progress')">В работе</div>
+        <div class="fchip" data-tf="review" onclick="setTaskFilter('review')">На проверке</div>
+        <div class="fchip" data-tf="overdue" onclick="setTaskFilter('overdue')">Просрочено</div>
+      </div>
+
+      <!-- Panel list -->
+      <div class="panel-list" id="panelList">
+        <div class="empty-state" id="panelEmpty">
+          <div class="empty-icon">📡</div>
+          <div class="empty-text">Нажмите «Загрузить»</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel" id="rightPanel">
+      <!-- Welcome state -->
+      <div class="welcome" id="welcomeState">
+        <div class="welcome-icon">🔶</div>
+        <div class="welcome-title">Дакар мониторинг</div>
+        <div class="welcome-text">Выберите чат или задачу в панели слева для просмотра переписки</div>
+        <div class="welcome-stats" id="welcomeStats">
+          <div class="welcome-stat">
+            <div class="welcome-stat-val" id="wStatTasks">—</div>
+            <div class="welcome-stat-lbl">Задач</div>
+          </div>
+          <div class="welcome-stat">
+            <div class="welcome-stat-val" id="wStatMentions">—</div>
+            <div class="welcome-stat-lbl">Упоминаний</div>
+          </div>
+          <div class="welcome-stat">
+            <div class="welcome-stat-val" id="wStatOverdue">—</div>
+            <div class="welcome-stat-lbl">Просрочено</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat view (hidden by default) -->
+      <div id="chatView" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+        <div class="chat-header" id="chatHeader">
+          <button class="chat-back" onclick="closeChat()" id="chatBackBtn">←</button>
+          <div class="chat-info">
+            <div class="chat-task-title" id="chatTitle">—</div>
+            <div class="chat-task-meta" id="chatMeta"></div>
+          </div>
+          <a class="chat-open-link" id="chatLink" href="#" target="_blank">↗ Bitrix24</a>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-loading"><div class="ring"></div> Загрузка сообщений...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STATUS BAR ===== -->
+  <div class="status-bar" id="statusBar">
+    Нажмите «Загрузить» для подключения
   </div>
 </div>
 
-<div class="kpi-row">
-  <div class="kpi cyan" onclick="filterTasks('all',document.querySelector('[data-tf=all]'))"><div class="kpi-val" id="kpiTotal">-</div><div class="kpi-lbl">Активных задач</div><div class="hint">4 сотрудника</div></div>
-  <div class="kpi orange" onclick="filterTasks('in-progress',document.querySelector('[data-tf=in-progress]'))"><div class="kpi-val" id="kpiInWork">-</div><div class="kpi-lbl">В работе</div><div class="hint">статус «в работе»</div></div>
-  <div class="kpi red" onclick="filterTasks('overdue',document.querySelector('[data-tf=overdue]'))"><div class="kpi-val" id="kpiOverdue">-</div><div class="kpi-lbl">Просрочено</div><div class="hint">прошли дедлайны</div></div>
-  <div class="kpi purple" onclick="filterMentions('all',document.querySelector('[data-mf=all]'))"><div class="kpi-val" id="kpiMentions">-</div><div class="kpi-lbl">Упоминания</div><span class="kpi-sub" id="kpiMentionsNew" style="display:none"></span></div>
-  <div class="kpi green" onclick="openClosedDrill()"><div class="kpi-val" id="kpiDone">-</div><div class="kpi-lbl">Закрыто за 30д</div><div class="hint">завершённые</div></div>
-</div>
-
-<div class="status-bar" id="statusBar">Нажмите «Загрузить» для обновления данных</div>
-
-<div class="main">
-  <div class="section">
-    <div class="section-head">
-      <div class="section-title">💬 Упоминания <span class="section-badge" id="mentionBadge">0</span></div>
-    </div>
-    <div class="filters" id="mFilters">
-      <div class="fchip active" data-mf="all">Все</div>
-      <div class="fchip" data-mf="new">Новые</div>
-      <div class="fchip" data-mf="task">Задачи</div>
-      <div class="fchip" data-mf="chat">Чаты задач</div>
-      <div class="fchip" data-mf="read">Прочитанные</div>
-    </div>
-    <div class="section-body" id="mentionsBox"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">Нажмите «Загрузить»</div></div></div>
-  </div>
-  <div class="section">
-    <div class="section-head">
-      <div class="section-title">📋 Задачи <span class="section-badge" id="taskBadge">0</span></div>
-    </div>
-    <div class="filters" id="tFilters">
-      <div class="fchip active" data-tf="all">Все</div>
-      <div class="fchip" data-tf="in-progress">В работе</div>
-      <div class="fchip" data-tf="new">Новые</div>
-      <div class="fchip" data-tf="review">На проверке</div>
-      <div class="fchip" data-tf="overdue">Просрочено</div>
-    </div>
-    <div class="section-body" id="tasksBox"><div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Нажмите «Загрузить»</div></div></div>
-  </div>
-</div>
-
-<div class="ov" id="ov" onclick="closeDrill()"></div>
-<div class="dpanel" id="dp">
-  <div class="dhead">
-    <div class="dtitle" id="dpTitle">—</div>
-    <div class="dcls" onclick="closeDrill()">✕</div>
-  </div>
-  <div class="dmeta" id="dpMeta"></div>
-  <div class="dbody" id="dpBody"><div class="empty"><div class="empty-text">Выберите задачу</div></div></div>
-</div>
-
-<div class="modal-ov" id="configOv">
+<!-- ===== CONFIG MODAL ===== -->
+<div class="modal-overlay" id="configOverlay">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-head">
-      <div class="modal-title">Настройки</div>
-      <div class="dcls" onclick="closeConfig()">✕</div>
+      <div class="modal-title">⚙ Настройки</div>
+      <button class="modal-close" onclick="closeConfig()">✕</button>
     </div>
     <div class="modal-body">
-      <label>Вебхук Дакара (входящий)</label>
-      <input type="text" id="hookInput" placeholder="https://dakar.bitrix24.ru/rest/1/xxxxx/"/>
-      <div class="hint">CRM → Вебхуки → Входящий webhook (права: task, im, user)</div>
-      <label>Твой ID в Дакаре</label>
-      <input type="text" id="myIdInput" placeholder="123"/>
-      <label>Сотрудники под контролем (ID через запятую)</label>
-      <input type="text" id="empIdsInput" placeholder="10,20,30"/>
+      <label>Вебхук URL</label>
+      <input type="text" id="cfgHook" placeholder="https://domain.bitrix24.ru/rest/1/xxxxx/">
+      <div class="field-hint">CRM → Вебхуки → Входящий (права: task, im, user)</div>
+      <label>Ваш ID</label>
+      <input type="text" id="cfgMyId" placeholder="123456">
+      <label>Сотрудники (ID через запятую)</label>
+      <input type="text" id="cfgEmpIds" placeholder="10, 20, 30">
     </div>
     <div class="modal-footer">
-      <button class="btn" onclick="closeConfig()">Отмена</button>
-      <button class="btn primary" onclick="saveConfig()">Сохранить</button>
+      <button class="mbtn" onclick="closeConfig()">Отмена</button>
+      <button class="mbtn primary" onclick="saveConfig()">Сохранить</button>
     </div>
   </div>
 </div>
 
 <script>
-var HOOK='https://dakar.bitrix24.ru/rest/103557/r4nxtoa2kpm2iu5x/',
-    MY_ID='103557',
-    EMP_IDS=[101861,15378,68370,15394],
-    PERIOD_DAYS=30,
-    activeTasks=[],closedCount=0,allMentions=[],seenComments={},
-    mentionFilter='all',taskFilter='all',panelOpen=false,
-    taskChatCache={};
-var NAMES={'103557':'Предеин А.','101861':'Забиров Т.','15378':'Макаров В.','68370':'Соколовский А.','15394':'Приходько К.'};
+/* ================================================================
+   STATE & CONFIG
+   ================================================================ */
+var DEFAULT_HOOK = 'https://dakar.bitrix24.ru/rest/103557/r4nxtoa2kpm2iu5x/';
+var DEFAULT_MY_ID = '103557';
+var DEFAULT_EMP_IDS = [101861, 15378, 68370, 15394];
+var DEFAULT_NAMES = {
+  '103557': 'Предеин А.', '101861': 'Забиров Т.', '15378': 'Макаров В.',
+  '68370': 'Соколовский А.', '15394': 'Приходько К.'
+};
 
-function loadConfig(){
-  try{var h=localStorage.getItem('dk_hook');if(h)HOOK=h}catch(e){}
-  try{var m=localStorage.getItem('dk_myid');if(m)MY_ID=m}catch(e){}
-  try{var e=localStorage.getItem('dk_empids');if(e)EMP_IDS=e.split(',').map(Number).filter(Boolean)}catch(e){}
+var HOOK, MY_ID, EMP_IDS, NAMES;
+var activeTasks = [];
+var allMentions = [];
+var taskChatCache = {};   // taskId → messages[]
+var userCache = {};       // userId → {name, color, avatar}
+var lastMsgId = {};       // chatId → highest msg id seen
+var seenKeys = {};        // mention.key → true
+var activeTab = 'mentions';
+var mentionFilter = 'all';
+var taskFilter = 'all';
+var currentView = null;   // { type:'task', taskId } or null
+var isInitialLoad = false;
+var pollTimer = null;
+var pollActive = false;
+var lastUpdateTime = null;
+var PERIOD_DAYS = 30;
+
+/* ================================================================
+   INIT — load config from localStorage
+   ================================================================ */
+function initConfig() {
+  HOOK = localStorageGet('dk_hook') || DEFAULT_HOOK;
+  MY_ID = localStorageGet('dk_myid') || DEFAULT_MY_ID;
+  var empStr = localStorageGet('dk_empids');
+  if (empStr) {
+    EMP_IDS = empStr.split(',').map(function(s) { return Number(s.trim()); }).filter(Boolean);
+  } else {
+    EMP_IDS = DEFAULT_EMP_IDS.slice();
+  }
+  // Merge names from config if present
+  NAMES = Object.assign({}, DEFAULT_NAMES);
+  var namesStr = localStorageGet('dk_names');
+  if (namesStr) {
+    try { Object.assign(NAMES, JSON.parse(namesStr)); } catch (e) {}
+  }
+  // Save defaults if first time
+  if (!localStorageGet('dk_hook')) {
+    localStorageSet('dk_hook', DEFAULT_HOOK);
+    localStorageSet('dk_myid', DEFAULT_MY_ID);
+    localStorageSet('dk_empids', DEFAULT_EMP_IDS.join(','));
+  }
+  // Load seen mentions
+  try { seenKeys = JSON.parse(localStorage.getItem('dk_seen') || '{}'); } catch (e) { seenKeys = {}; }
 }
-function saveConfig(){
-  HOOK=document.getElementById('hookInput').value.trim();
-  MY_ID=document.getElementById('myIdInput').value.trim();
-  EMP_IDS=document.getElementById('empIdsInput').value.split(',').map(function(s){return Number(s.trim())}).filter(Boolean);
-  try{localStorage.setItem('dk_hook',HOOK)}catch(e){}
-  try{localStorage.setItem('dk_myid',MY_ID)}catch(e){}
-  try{localStorage.setItem('dk_empids',EMP_IDS.join(','))}catch(e){}
+
+function localStorageGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+function localStorageSet(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
+
+/* ================================================================
+   CONFIG MODAL
+   ================================================================ */
+function openConfig() {
+  document.getElementById('cfgHook').value = HOOK;
+  document.getElementById('cfgMyId').value = MY_ID;
+  document.getElementById('cfgEmpIds').value = EMP_IDS.join(', ');
+  document.getElementById('configOverlay').classList.add('show');
+}
+function closeConfig() { document.getElementById('configOverlay').classList.remove('show'); }
+function saveConfig() {
+  HOOK = document.getElementById('cfgHook').value.trim();
+  MY_ID = document.getElementById('cfgMyId').value.trim();
+  EMP_IDS = document.getElementById('cfgEmpIds').value.split(',').map(function(s) { return Number(s.trim()); }).filter(Boolean);
+  localStorageSet('dk_hook', HOOK);
+  localStorageSet('dk_myid', MY_ID);
+  localStorageSet('dk_empids', EMP_IDS.join(','));
   closeConfig();
 }
-function openConfig(){
-  document.getElementById('hookInput').value=HOOK;
-  document.getElementById('myIdInput').value=MY_ID;
-  document.getElementById('empIdsInput').value=EMP_IDS.join(', ');
-  document.getElementById('configOv').classList.add('show');
-}
-function closeConfig(){document.getElementById('configOv').classList.remove('show')}
-document.getElementById('configOv').addEventListener('click',function(e){if(e.target===this)closeConfig()});
+document.getElementById('configOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeConfig();
+});
 
-function setStatus(msg,loading,isError,isWarn){
-  var el=document.getElementById('statusBar');
-  el.className='status-bar'+(isError?' error':'')+(isWarn?' warn':'');
-  el.innerHTML=(loading?'<div class="sloader"></div> ':'')+esc(msg);
+/* ================================================================
+   STATUS BAR
+   ================================================================ */
+function setStatus(msg, loading, isError, isWarn) {
+  var el = document.getElementById('statusBar');
+  el.className = 'status-bar' + (isError ? ' error' : '') + (isWarn ? ' warn' : '');
+  el.innerHTML = (loading ? '<div class="status-loader"></div> ' : '') + esc(msg);
 }
-
-function bxPost(method,body){
-  if(!HOOK)return Promise.resolve({error:'Вебхук не настроен'});
-  var u='/api/'+method+'?hook='+encodeURIComponent(HOOK.trim());
-  return fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})})
-    .then(function(r){
-      if(!r.ok) return {error:'HTTP '+r.status};
-      return r.json();
-    })
-    .catch(function(e){return{error:e.message}});
+function setStatusTime() {
+  if (!lastUpdateTime) return;
+  var h = String(lastUpdateTime.getHours()).padStart(2, '0');
+  var m = String(lastUpdateTime.getMinutes()).padStart(2, '0');
+  var s = String(lastUpdateTime.getSeconds()).padStart(2, '0');
+  var base = 'Обновлено: ' + h + ':' + m + ':' + s;
+  if (pollActive) {
+    setStatus(base, false);
+  }
 }
 
-function fetchTasksPaginated(filterObj,selectArr){
-  var all=[],start=0;
-  function step(){
-    return bxPost('tasks.task.list',{filter:filterObj,select:selectArr,start:start})
-    .then(function(r){
-      if(r.error){console.warn('[tasks] error:',r.error);return all}
-      var tasks=(r&&r.result&&r.result.tasks)||[];
-      all=all.concat(tasks);
-      if(r&&r.next&&tasks.length>=50){start=r.next;return step()}
+/* ================================================================
+   API LAYER
+   ================================================================ */
+function bxPost(method, body) {
+  if (!HOOK) return Promise.resolve({ error: 'Вебхук не настроен' });
+  var url = '/api/' + method + '?hook=' + encodeURIComponent(HOOK.trim());
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body || {})
+  })
+  .then(function(r) {
+    if (!r.ok) return { error: 'HTTP ' + r.status };
+    return r.json();
+  })
+  .catch(function(e) { return { error: e.message }; });
+}
+
+function fetchTasksPaginated(filterObj, selectArr) {
+  var all = [], start = 0;
+  function step() {
+    var params = { filter: filterObj, select: selectArr, start: start };
+    return bxPost('tasks.task.list', params).then(function(r) {
+      if (r.error) { console.warn('[tasks] error:', r.error); return all; }
+      var tasks = (r && r.result && r.result.tasks) || [];
+      all = all.concat(tasks);
+      if (r && r.next && tasks.length >= 50) { start = r.next; return step(); }
       return all;
     });
   }
   return step();
 }
 
-function loadData(){
-  if(!HOOK){openConfig();return}
-  if(!MY_ID||!EMP_IDS.length){openConfig();return}
-  var btn=document.getElementById('loadBtn');
-  btn.disabled=true;btn.textContent='...';
-  activeTasks=[];closedCount=0;allMentions=[];taskChatCache={};
+/* ================================================================
+   BATCH CHAT LOADER — loads messages for tasks with CHAT_ID
+   ================================================================ */
+function loadAllTaskChats(tasks) {
+  if (!tasks || !tasks.length) return Promise.resolve(0);
+  var batchSize = 3;
+  var idx = 0;
+  var totalLoaded = 0;
+  var mentionTag = new RegExp('\\[USER=' + MY_ID + '\\]', 'gi');
 
-  var dFrom=new Date();dFrom.setDate(dFrom.getDate()-PERIOD_DAYS);
-  var dateFrom=dFrom.toISOString().substring(0,10);
-  var allIds=EMP_IDS.slice();
-  if(MY_ID&&allIds.indexOf(Number(MY_ID))===-1)allIds.push(Number(MY_ID));
+  function processBatch() {
+    var batch = tasks.slice(idx, idx + batchSize);
+    if (!batch.length) return Promise.resolve(totalLoaded);
+    idx += batchSize;
 
-  // CHAT_ID → im.dialog.messages.get (не im.message.list!)
-  var sel=['ID','TITLE','RESPONSIBLE_ID','STATUS','STAGE_ID','CREATED_DATE','CLOSED_DATE','DEADLINE','DESCRIPTION','CHAT_ID'];
+    var promises = batch.map(function(t) {
+      var tid = t.id || t.ID;
+      var chatId = t.chatId || t.CHAT_ID;
+      if (!chatId) return Promise.resolve(0);
 
-  setStatus('1/3 — Загрузка задач...',true);
-
-  fetchTasksPaginated({'RESPONSIBLE_ID':allIds,'!STATUS':[5,6,7],'>=CREATED_DATE':dateFrom},sel)
-  .then(function(tasks){
-    activeTasks=tasks||[];
-    console.log('[load] tasks:',activeTasks.length,'loaded. CHAT_ID sample:', activeTasks[0]?activeTasks[0].chatId||activeTasks[0].CHAT_ID:'none');
-
-    // Extract mentions from task descriptions
-    extractTaskMentions(activeTasks);
-
-    setStatus('2/3 — Загрузка чатов задач (im.dialog.messages.get)...',true);
-    return loadAllTaskChats(activeTasks);
-  })
-  .then(function(chatResults){
-    console.log('[load] task chats loaded:', chatResults);
-
-    setStatus('3/3 — Считаем закрытые...',true);
-    return bxPost('tasks.task.list',{filter:{'RESPONSIBLE_ID':allIds,'STATUS':5,'>=CLOSED_DATE':dateFrom},select:['ID']});
-  })
-  .then(function(closedR){
-    closedCount=(closedR&&!closedR.error&&closedR.result&&closedR.result.tasks)?closedR.result.tasks.length:0;
-
-    allMentions.sort(function(a,b){return (b.date||'').localeCompare(a.date||'')});
-    btn.disabled=false;btn.textContent='Загрузить';
-
-    var chatM=allMentions.filter(function(m){return m.type==='chat'}).length;
-    var taskM=allMentions.filter(function(m){return m.type==='task'}).length;
-    var parts=[activeTasks.length+' акт.', closedCount+' закр.', allMentions.length+' упом.'];
-
-    if(chatM===0&&activeTasks.length>0){
-      setStatus(parts.join(', ')+' — чаты задач не загружены (нужен im в вебхуке)',false,false,true);
-    } else {
-      setStatus('Готово: '+parts.join(', '),false);
-    }
-    renderAll();
-  })
-  .catch(function(e){
-    btn.disabled=false;btn.textContent='Загрузить';
-    setStatus('Ошибка: '+e.message,true,true);
-    console.error('[loadData] fatal:',e);
-  });
-}
-
-// --- Упоминания из описаний задач ---
-function extractTaskMentions(tasks){
-  var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
-  tasks.forEach(function(t){
-    var desc=t.description||'';
-    if(tag.test(desc)){
-      tag.lastIndex=0;
-      var text=desc.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-      text=text.replace(tag,'<mark>@'+esc(NAMES[MY_ID]||'#'+MY_ID)+'</mark>');
-      allMentions.push({
-        type:'task',taskId:t.id||t.ID,
-        title:t.title||t.TITLE,
-        text:truncate(text,200),
-        date:(t.createdDate||t.CREATED_DATE||'').substring(0,16),
-        key:'d_'+(t.id||t.ID)
-      });
-    }
-  });
-}
-
-// --- Чаты задач: im.dialog.messages.get по CHAT_ID каждой задачи ---
-function loadAllTaskChats(tasks){
-  if(!tasks||!tasks.length)return Promise.resolve(0);
-  var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
-  var batchSize=5;
-  var idx=0;
-  var totalLoaded=0;
-
-  function processBatch(){
-    var batch=tasks.slice(idx,idx+batchSize);
-    if(!batch.length)return Promise.resolve(totalLoaded);
-    idx+=batchSize;
-
-    var promises=batch.map(function(t){
-      var tid=t.id||t.ID;
-      var chatId=t.chatId||t.CHAT_ID;
-      if(!chatId){
-        console.log('[chat] task '+tid+': no CHAT_ID, skipping');
-        return Promise.resolve(0);
-      }
-
-      return bxPost('im.dialog.messages.get',{DIALOG_ID:'chat'+chatId,LIMIT:50})
-      .then(function(r){
-        if(r.error){
-          console.warn('[chat] task '+tid+' (chat '+chatId+'): '+r.error);
-          return 0;
+      return bxPost('im.dialog.messages.get', {
+        DIALOG_ID: 'chat' + chatId,
+        LIMIT: 50
+      }).then(function(r) {
+        if (r.error) { console.warn('[chat] task', tid, 'error:', r.error); return 0; }
+        var raw = r && r.result;
+        var msgs = raw && raw.messages;
+        // Cache users from response
+        if (raw && raw.users) {
+          var users = Array.isArray(raw.users) ? raw.users : [];
+          users.forEach(function(u) {
+            if (u && u.id) {
+              userCache[String(u.id)] = {
+                name: u.name || ('#' + u.id),
+                color: u.color || '#5a6070',
+                avatar: u.avatar || ''
+              };
+            }
+          });
         }
-        var raw=r.result;
-        var msgs=raw&&raw.messages;
-        if(!msgs){taskChatCache[tid]=[];return 0}
-        msgs=Array.isArray(msgs)?msgs:[];
-        taskChatCache[tid]=msgs;
-        totalLoaded+=msgs.length;
+        if (!msgs) { taskChatCache[tid] = []; return 0; }
+        msgs = Array.isArray(msgs) ? msgs : [];
+        taskChatCache[tid] = msgs;
+        totalLoaded += msgs.length;
 
-        // Ищем упоминания [USER=xxx] в сообщениях чата задачи
-        msgs.forEach(function(m){
-          var mText=m.text||'';
-          if(!mText||!tag.test(mText))return;
-          tag.lastIndex=0;
+        // Track lastMsgId for delta loading
+        msgs.forEach(function(m) {
+          var mid = Number(m.id || m.ID);
+          if (mid && (!lastMsgId[chatId] || mid > lastMsgId[chatId])) {
+            lastMsgId[chatId] = mid;
+          }
+        });
 
-          var mKey='chat_'+tid+'_'+(m.id||m.ID);
-          // Нет дубликатов
-          for(var i=0;i<allMentions.length;i++){if(allMentions[i].key===mKey)return}
-
-          var cleanText=mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-          cleanText=cleanText.replace(tag,'<mark>@'+esc(NAMES[MY_ID]||'#'+MY_ID)+'</mark>');
-          var dateStr=(m.date||'').substring(0,16).replace('T',' ');
-          var fromId=m.author_id||m.from_id||m.authorId||0;
-          var fromName=NAMES[String(fromId)]||('#'+fromId);
-
+        // Extract mentions
+        msgs.forEach(function(m) {
+          var mText = m.text || '';
+          if (!mText || !mentionTag.test(mText)) return;
+          mentionTag.lastIndex = 0;
+          var mKey = 'chat_' + tid + '_' + (m.id || m.ID);
+          // Dedup
+          for (var i = 0; i < allMentions.length; i++) { if (allMentions[i].key === mKey) return; }
+          var cleanText = mText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+          cleanText = cleanText.replace(mentionTag, '<mark>@' + esc(NAMES[MY_ID] || '#' + MY_ID) + '</mark>');
+          var fromId = m.author_id || m.from_id || m.authorId || 0;
+          var fromName = NAMES[String(fromId)] || ('#' + fromId);
           allMentions.push({
-            type:'chat',taskId:tid,chatId:chatId,
-            title:'Чат: '+(t.title||t.TITLE),
-            fromName:fromName,
-            text:truncate(cleanText,200),
-            date:dateStr,
-            key:mKey
+            type: 'chat', taskId: tid, chatId: chatId,
+            title: 'Чат: ' + (t.title || t.TITLE),
+            fromName: fromName,
+            fromId: String(fromId),
+            text: truncate(cleanText, 200),
+            date: (m.date || '').substring(0, 16).replace('T', ' '),
+            key: mKey
           });
         });
         return msgs.length;
-      })
-      .catch(function(e){
-        console.warn('[chat] task '+tid+' fetch error:',e.message);
+      }).catch(function(e) {
+        console.warn('[chat] task', tid, 'fetch error:', e.message);
         return 0;
       });
     });
 
-    return Promise.all(promises).then(function(){return processBatch()});
+    return Promise.all(promises).then(function() { return processBatch(); });
   }
 
   return processBatch();
 }
 
-// === Drill panel ===
-document.getElementById('tasksBox').addEventListener('click',function(e){
-  var row=e.target.closest('.task-row');if(!row)return;
-  openTaskDrill(Number(row.getAttribute('data-tid')));
-});
-document.getElementById('mentionsBox').addEventListener('click',function(e){
-  var m=e.target.closest('.mention');if(!m)return;
-  var tid=m.getAttribute('data-tid');
-  if(tid)openTaskDrill(Number(tid));
-});
-
-function openTaskDrill(tid){
-  var task=null;
-  activeTasks.forEach(function(t){if(Number(t.id||t.ID)===tid)task=t});
-  if(!task)return;
-  seenComments['d_'+tid]=true;saveSeen();
-
-  var stage=getStage(task);
-  var respId=task.responsibleId||task.RESPONSIBLE_ID;
-  var dl=(task.deadline||task.DEADLINE||'').substring(0,16);
-  var od=isOverdue(task);
-  var chatId=task.chatId||task.CHAT_ID;
-  var base=HOOK?HOOK.split('/rest/')[0]:'';
-
-  document.getElementById('dpTitle').textContent=task.title||task.TITLE;
-  document.getElementById('dpMeta').innerHTML=
-    '<div class="dm-item"><div class="dm-lbl">Статус</div><div class="dm-val" style="color:'+stage.color+'">'+stage.name+'</div></div>'+
-    '<div class="dm-item"><div class="dm-lbl">Ответственный</div><div class="dm-val">'+esc(NAMES[String(respId)]||('#'+respId))+'</div></div>'+
-    '<div class="dm-item"><div class="dm-lbl">Дедлайн</div><div class="dm-val" style="color:'+(od?'var(--red)':'var(--text)')+'">'+(dl||'—')+'</div></div>'+
-    '<div class="dm-item"><div class="dm-lbl">Создана</div><div class="dm-val">'+((task.createdDate||task.CREATED_DATE||'').substring(0,10))+'</div></div>'+
-    (base?'<div class="dm-item"><div class="dm-lbl">Битрикс</div><div class="dm-val"><a href="'+base+'/company/personal/user/'+MY_ID+'/tasks/task/view/'+tid+'/" target="_blank">↗ открыть #'+tid+'</a></div></div>':'');
-
-  // Panel body: description + task chat
-  var desc=(task.description||task.DESCRIPTION||'').trim();
-  var html='';
-
-  if(desc){
-    html+='<div class="dsection"><div class="dsection-title"><span class="ds-dot blue"></span>Описание</div><div class="ddesc">'+desc+'</div></div>';
-  }
-
-  // Чат задачи (im.message.list по CHAT_ID)
-  html+='<div class="dsection" id="chatSection">';
-  if(chatId){
-    html+='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div class="loading"><div class="ring"></div>Загрузка чата...</div>';
-  } else {
-    html+='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div class="derror">У задачи нет CHAT_ID — чат не привязан</div>';
-  }
-  html+='</div>';
-
-  document.getElementById('dpBody').innerHTML=html;
-  openPanel();
-
-  // Загрузка чата задачи
-  if(!chatId)return;
-
-  // Если уже кэширован — рендерим сразу
-  if(taskChatCache[tid]){
-    renderTaskChat(tid,taskChatCache[tid]);
-    return;
-  }
-
-  bxPost('im.dialog.messages.get',{DIALOG_ID:'chat'+chatId,LIMIT:50})
-  .then(function(r){
-    if(!r){
-      showChatError('Нет ответа от API');
-      return;
-    }
-    if(r.error){
-      showChatError(r.error_description||r.error);
-      return;
-    }
-    var raw=r.result;
-    var msgs=raw&&raw.messages;
-    if(!msgs){
-      taskChatCache[tid]=[];
-      showChatError('Чат задачи пуст или недоступен');
-      return;
-    }
-    msgs=Array.isArray(msgs)?msgs:[];
-    taskChatCache[tid]=msgs;
-    renderTaskChat(tid,msgs);
-  })
-  .catch(function(err){
-    showChatError(err.message||'Ошибка сети');
+/* ================================================================
+   EXTRACT MENTIONS FROM TASK DESCRIPTIONS
+   ================================================================ */
+function extractTaskMentions(tasks) {
+  var tag = new RegExp('\\[USER=' + MY_ID + '\\]', 'gi');
+  tasks.forEach(function(t) {
+    var desc = t.description || '';
+    if (!tag.test(desc)) return;
+    tag.lastIndex = 0;
+    var text = desc.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    text = text.replace(tag, '<mark>@' + esc(NAMES[MY_ID] || '#' + MY_ID) + '</mark>');
+    allMentions.push({
+      type: 'task', taskId: t.id || t.ID,
+      title: t.title || t.TITLE,
+      text: truncate(text, 200),
+      date: (t.createdDate || t.CREATED_DATE || '').substring(0, 16),
+      key: 'd_' + (t.id || t.ID)
+    });
   });
 }
 
-function showChatError(errMsg){
-  var sec=document.getElementById('chatSection');
-  if(!sec)return;
-  sec.innerHTML='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div class="derror">Не удалось загрузить чат: <code>'+esc(errMsg)+'</code><br><span style="color:var(--text3);font-size:11px">Для чатов задач нужно право «Чат и уведомления (im)» в вебхуке</span></div>';
-  console.warn('[taskChat] error:',errMsg);
+/* ================================================================
+   MAIN DATA LOAD
+   ================================================================ */
+function loadData() {
+  if (!HOOK) { openConfig(); return; }
+  if (!MY_ID || !EMP_IDS.length) { openConfig(); return; }
+
+  var btn = document.getElementById('loadBtn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  isInitialLoad = true;
+
+  activeTasks = [];
+  allMentions = [];
+  taskChatCache = {};
+  lastMsgId = {};
+  userCache = {};
+  closeChat();
+
+  var dFrom = new Date();
+  dFrom.setDate(dFrom.getDate() - PERIOD_DAYS);
+  var dateFrom = dFrom.toISOString().substring(0, 10);
+  var allIds = EMP_IDS.slice();
+  if (MY_ID && allIds.indexOf(Number(MY_ID)) === -1) allIds.push(Number(MY_ID));
+
+  var sel = ['ID', 'TITLE', 'RESPONSIBLE_ID', 'STATUS', 'STAGE_ID',
+             'CREATED_DATE', 'CLOSED_DATE', 'DEADLINE', 'DESCRIPTION', 'CHAT_ID'];
+
+  setStatus('1/3 — Загрузка задач...', true);
+  showSkeleton();
+
+  fetchTasksPaginated({
+    'RESPONSIBLE_ID': allIds,
+    '!STATUS': [5, 6, 7],
+    '>=CREATED_DATE': dateFrom
+  }, sel)
+  .then(function(tasks) {
+    activeTasks = tasks || [];
+    extractTaskMentions(activeTasks);
+    setStatus('2/3 — Загрузка чатов (' + countChatTasks() + ')...', true);
+    return loadAllTaskChats(activeTasks);
+  })
+  .then(function(totalMsgs) {
+    setStatus('3/3 — Готово', false);
+    lastUpdateTime = new Date();
+    isInitialLoad = false;
+    allMentions.sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); });
+
+    btn.classList.remove('loading');
+    btn.disabled = false;
+
+    renderAll();
+    setStatusTime();
+
+    // Start auto-refresh
+    startPolling();
+
+    // Request notification permission
+    requestNotificationPermission();
+  })
+  .catch(function(e) {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    isInitialLoad = false;
+    setStatus('Ошибка: ' + e.message, false, true);
+    console.error('[loadData]', e);
+  });
 }
 
-function renderTaskChat(tid,msgs){
-  var sec=document.getElementById('chatSection');
-  if(!sec)return;
+function countChatTasks() {
+  return activeTasks.filter(function(t) { return t.chatId || t.CHAT_ID; }).length;
+}
 
-  if(!msgs||!msgs.length){
-    sec.innerHTML='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи</div><div style="color:var(--text3);font-size:12px;padding:8px 0">В чате задач нет сообщений</div>';
+/* ================================================================
+   SKELETON LOADING
+   ================================================================ */
+function showSkeleton() {
+  var html = '';
+  for (var i = 0; i < 6; i++) {
+    html += '<div class="skeleton-item">' +
+      '<div class="skeleton skeleton-avatar"></div>' +
+      '<div class="skeleton-lines">' +
+      '<div class="skeleton skeleton-line"></div>' +
+      '<div class="skeleton skeleton-line short"></div>' +
+      '</div></div>';
+  }
+  document.getElementById('panelList').innerHTML = html;
+}
+
+/* ================================================================
+   DELTA LOADING — check for new messages in tracked chats
+   ================================================================ */
+function deltaLoadChats() {
+  // Get chat IDs that have been opened or have mentions
+  var trackedChats = {};
+  Object.keys(taskChatCache).forEach(function(tid) {
+    var msgs = taskChatCache[tid];
+    if (!msgs || !msgs.length) return;
+    var chatId = msgs[0].chat_id;
+    if (!chatId) return;
+    trackedChats[chatId] = tid;
+  });
+
+  var chatIds = Object.keys(trackedChats);
+  if (!chatIds.length) return;
+
+  var mentionTag = new RegExp('\\[USER=' + MY_ID + '\\]', 'gi');
+  var newMentionCount = 0;
+  var batchIdx = 0;
+  var batch = 3;
+
+  function processBatch() {
+    var ids = chatIds.slice(batchIdx, batchIdx + batch);
+    if (!ids.length) return Promise.resolve(newMentionCount);
+    batchIdx += batch;
+
+    var promises = ids.map(function(chatId) {
+      var tid = trackedChats[chatId];
+      var lastId = lastMsgId[chatId];
+      if (!lastId) return Promise.resolve(0);
+
+      return bxPost('im.dialog.messages.get', {
+        DIALOG_ID: 'chat' + chatId,
+        LAST_MESSAGE_ID: lastId,
+        LIMIT: 50
+      }).then(function(r) {
+        if (r.error || !r || !r.result) return 0;
+        var msgs = r.result.messages;
+        if (!msgs || !Array.isArray(msgs)) return 0;
+
+        // Cache users
+        if (r.result.users) {
+          var users = Array.isArray(r.result.users) ? r.result.users : [];
+          users.forEach(function(u) {
+            if (u && u.id) {
+              userCache[String(u.id)] = {
+                name: u.name || ('#' + u.id),
+                color: u.color || '#5a6070',
+                avatar: u.avatar || ''
+              };
+            }
+          });
+        }
+
+        // Filter: only new messages (id > lastId)
+        // API returns messages with id <= LAST_MESSAGE_ID too, so we filter
+        var newMsgs = msgs.filter(function(m) { return Number(m.id) > lastId; });
+        if (!newMsgs.length) return 0;
+
+        // Append to cache
+        taskChatCache[tid] = (taskChatCache[tid] || []).concat(newMsgs);
+
+        // Update lastMsgId
+        newMsgs.forEach(function(m) {
+          var mid = Number(m.id);
+          if (mid > lastMsgId[chatId]) lastMsgId[chatId] = mid;
+        });
+
+        // Check for mentions
+        newMsgs.forEach(function(m) {
+          var mText = m.text || '';
+          if (!mText || !mentionTag.test(mText)) return;
+          mentionTag.lastIndex = 0;
+
+          var mKey = 'chat_' + tid + '_' + m.id;
+          for (var i = 0; i < allMentions.length; i++) { if (allMentions[i].key === mKey) return; }
+
+          var cleanText = mText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+          cleanText = cleanText.replace(mentionTag, '<mark>@' + esc(NAMES[MY_ID] || '#' + MY_ID) + '</mark>');
+          var fromId = m.author_id || m.from_id || m.authorId || 0;
+          var fromName = NAMES[String(fromId)] || ('#' + fromId);
+
+          // Find task title
+          var taskTitle = 'Чат';
+          var task = findTask(tid);
+          if (task) taskTitle = 'Чат: ' + (task.title || task.TITLE);
+
+          allMentions.unshift({
+            type: 'chat', taskId: tid, chatId: Number(chatId),
+            title: taskTitle,
+            fromName: fromName,
+            fromId: String(fromId),
+            text: truncate(cleanText, 200),
+            date: (m.date || '').substring(0, 16).replace('T', ' '),
+            key: mKey
+          });
+          newMentionCount++;
+        });
+
+        return newMsgs.length;
+      }).catch(function(e) {
+        console.warn('[delta] chat', chatId, 'error:', e.message);
+        return 0;
+      });
+    });
+
+    return Promise.all(promises).then(function() { return processBatch(); });
+  }
+
+  return processBatch().then(function(total) {
+    if (newMentionCount > 0) {
+      // Notify for each new mention
+      allMentions.slice(0, newMentionCount).forEach(function(m) {
+        sendNotification(m);
+      });
+      playBeep();
+      renderAll();
+    }
+    return total;
+  });
+}
+
+function refreshTaskList() {
+  var dFrom = new Date();
+  dFrom.setDate(dFrom.getDate() - PERIOD_DAYS);
+  var dateFrom = dFrom.toISOString().substring(0, 10);
+  var allIds = EMP_IDS.slice();
+  if (MY_ID && allIds.indexOf(Number(MY_ID)) === -1) allIds.push(Number(MY_ID));
+
+  return fetchTasksPaginated({
+    'RESPONSIBLE_ID': allIds,
+    '!STATUS': [5, 6, 7],
+    '>=CREATED_DATE': dateFrom
+  }, ['ID', 'TITLE', 'RESPONSIBLE_ID', 'STATUS', 'DEADLINE', 'CHAT_ID'])
+  .then(function(tasks) {
+    activeTasks = tasks || [];
+    renderAll();
+    return activeTasks.length;
+  });
+}
+
+/* ================================================================
+   POLLING — smart auto-refresh
+   ================================================================ */
+function startPolling() {
+  stopPolling();
+  pollActive = true;
+  document.getElementById('pollDot').classList.add('active');
+
+  // Every 45 seconds: delta load chats
+  pollTimer = setInterval(function() {
+    if (!pollActive) return;
+    lastUpdateTime = new Date();
+    setStatusTime();
+
+    // Delta load chats
+    deltaLoadChats().then(function(newCount) {
+      if (newCount > 0) {
+        setStatus('Новых сообщений: ' + newCount, false);
+      }
+    });
+
+    // Refresh task list every ~4 intervals (3 min)
+    if (Math.random() < 0.25) {
+      refreshTaskList();
+    }
+  }, 45000);
+}
+
+function stopPolling() {
+  pollActive = false;
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  document.getElementById('pollDot').classList.remove('active');
+}
+
+function manualRefresh() {
+  if (isInitialLoad) return;
+  stopPolling();
+  loadData();
+}
+
+/* ================================================================
+   NOTIFICATIONS
+   ================================================================ */
+function requestNotificationPermission() {
+  try {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  } catch (e) {}
+}
+
+function sendNotification(mention) {
+  try {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    var task = findTask(mention.taskId);
+    var chatName = mention.title || (task ? task.title || task.TITLE : 'Чат');
+
+    var n = new Notification('Упоминание в ' + chatName, {
+      body: (mention.fromName || '') + ': ' + stripHtml(mention.text),
+      tag: mention.key,
+      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%23ff8c42"/><text x="16" y="22" text-anchor="middle" fill="white" font-size="18" font-weight="bold">D</text></svg>'
+    });
+    n.onclick = function() {
+      window.focus();
+      if (mention.taskId) {
+        openChatView(mention.taskId);
+      }
+      n.close();
+    };
+  } catch (e) {}
+}
+
+function playBeep() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.value = 0.1;
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch (e) {}
+}
+
+/* ================================================================
+   TABS & FILTERS
+   ================================================================ */
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.panel-tab').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('data-tab') === tab);
+  });
+  document.getElementById('mentionFilters').style.display = (tab === 'mentions') ? 'flex' : 'none';
+  document.getElementById('taskFilters').style.display = (tab === 'tasks') ? 'flex' : 'none';
+  renderPanelList();
+}
+
+function setMentionFilter(f) {
+  mentionFilter = f;
+  document.querySelectorAll('#mentionFilters .fchip').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('data-mf') === f);
+  });
+  renderPanelList();
+}
+
+function setTaskFilter(f) {
+  taskFilter = f;
+  if (activeTab !== 'tasks') switchTab('tasks');
+  document.querySelectorAll('#taskFilters .fchip').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('data-tf') === f);
+  });
+  renderPanelList();
+}
+
+/* ================================================================
+   RENDER — KPIs
+   ================================================================ */
+function renderKPIs() {
+  var inWork = activeTasks.filter(function(t) { return getStage(t).id === 'in-progress'; }).length;
+  var overdue = activeTasks.filter(isOverdue).length;
+  var newMentions = allMentions.filter(function(m) { return !seenKeys[m.key]; }).length;
+
+  document.getElementById('kpiTasks').textContent = activeTasks.length;
+  document.getElementById('kpiProgress').textContent = inWork;
+  document.getElementById('kpiOverdue').textContent = overdue;
+  document.getElementById('kpiMentions').textContent = allMentions.length;
+
+  var newEl = document.getElementById('kpiMentionsNew');
+  if (newMentions > 0) { newEl.textContent = '+' + newMentions; } else { newEl.textContent = ''; }
+
+  // Header stats
+  document.getElementById('hStatTasks').textContent = activeTasks.length + ' задач';
+  var overdueDot = document.getElementById('hStatOverdueDot');
+  if (overdue > 0) {
+    overdueDot.style.display = 'block';
+    document.getElementById('hStatOverdue').textContent = overdue + ' проср.';
+  } else {
+    overdueDot.style.display = 'none';
+    document.getElementById('hStatOverdue').textContent = '';
+  }
+  document.getElementById('hStatMentions').textContent = allMentions.length + ' упом.';
+
+  // Tab badges
+  var mBadge = document.getElementById('tabMentionBadge');
+  if (newMentions > 0) { mBadge.textContent = newMentions; mBadge.style.display = 'inline-block'; }
+  else { mBadge.style.display = 'none'; }
+
+  var tBadge = document.getElementById('tabTaskBadge');
+  if (activeTasks.length > 0) { tBadge.textContent = activeTasks.length; tBadge.style.display = 'inline-block'; }
+  else { tBadge.style.display = 'none'; }
+
+  // Welcome stats
+  document.getElementById('wStatTasks').textContent = activeTasks.length;
+  document.getElementById('wStatMentions').textContent = allMentions.length;
+  document.getElementById('wStatOverdue').textContent = overdue;
+}
+
+/* ================================================================
+   RENDER — Panel List
+   ================================================================ */
+function renderPanelList() {
+  if (activeTab === 'mentions') renderMentionList();
+  else renderTaskList();
+}
+
+function renderMentionList() {
+  var box = document.getElementById('panelList');
+  var list = allMentions;
+
+  if (mentionFilter === 'new') list = list.filter(function(m) { return !seenKeys[m.key]; });
+  else if (mentionFilter === 'read') list = list.filter(function(m) { return seenKeys[m.key]; });
+
+  if (!list.length) {
+    box.innerHTML = '<div class="empty-state">' +
+      '<div class="empty-icon">💬</div>' +
+      '<div class="empty-text">' + (allMentions.length ? 'Нет «' + mentionFilter + '»' : 'Упоминаний не найдено') + '</div></div>';
     return;
   }
 
-  // Сортируем по дате (старые сверху)
-  msgs.sort(function(a,b){return(a.date||'').localeCompare(b.date||'')});
+  box.innerHTML = list.map(function(m) {
+    var unseen = !seenKeys[m.key];
+    var fromId = m.fromId || '0';
+    var userColor = getUserColor(fromId);
+    var userLetter = getUserLetter(fromId);
+    var task = findTask(m.taskId);
+    var chatName = m.title || (task ? (task.title || task.TITLE) : 'Чат');
+    var dateStr = formatTime(m.date);
 
-  var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
-  var html='<div class="dsection-title"><span class="ds-dot purple"></span>Чат задачи ('+msgs.length+' сообщ.)</div>';
+    return '<div class="mention-item' + (unseen ? ' unseen' : '') + '" data-key="' + esc(m.key) + '" data-tid="' + m.taskId + '" data-type="' + m.type + '">' +
+      '<div class="mention-avatar" style="background:' + userColor + '">' + esc(userLetter) + '</div>' +
+      '<div class="mention-content">' +
+      '<div class="mention-header">' +
+      '<div class="mention-chat-name">' + esc(truncate(chatName, 35)) + '</div>' +
+      '<div class="mention-time">' + esc(dateStr) + '</div>' +
+      '</div>' +
+      '<div class="mention-text">' + (m.fromName ? '<span style="color:var(--accent);font-weight:500;margin-right:3px">' + esc(m.fromName) + ':</span>' : '') + m.text + '</div>' +
+      '</div></div>';
+  }).join('');
+}
 
-  msgs.forEach(function(m){
-    var mText=m.text||'';
+function renderTaskList() {
+  var box = document.getElementById('panelList');
+  var list = activeTasks;
 
-    // Системные сообщения (создание задачи, смена статуса и т.д.)
-    var isSystem=!!(m.system||m.SYSTEM||m.event_id||m.MESSAGE_TYPE==='S');
-    if(isSystem){
-      var sysText=mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-      if(sysText){
-        html+='<div class="cmt-sys">'+esc(truncate(sysText,120))+'</div>';
+  if (taskFilter === 'new') list = list.filter(function(t) { return getStage(t).id === 'new'; });
+  else if (taskFilter === 'in-progress') list = list.filter(function(t) { return getStage(t).id === 'in-progress'; });
+  else if (taskFilter === 'review') list = list.filter(function(t) { return getStage(t).id === 'review'; });
+  else if (taskFilter === 'overdue') list = list.filter(isOverdue);
+
+  // Sort: overdue first, then by deadline
+  list = list.slice().sort(function(a, b) {
+    var oa = isOverdue(a) ? 0 : 1, ob = isOverdue(b) ? 0 : 1;
+    if (oa !== ob) return oa - ob;
+    return (a.deadline || a.DEADLINE || '').localeCompare(b.deadline || b.DEADLINE || '');
+  });
+
+  if (!list.length) {
+    box.innerHTML = '<div class="empty-state">' +
+      '<div class="empty-icon">📋</div>' +
+      '<div class="empty-text">Нет задач</div></div>';
+    return;
+  }
+
+  box.innerHTML = list.map(function(t) {
+    var stage = getStage(t);
+    var od = isOverdue(t);
+    var tid = t.id || t.ID;
+    var respId = t.responsibleId || t.RESPONSIBLE_ID;
+    var dl = (t.deadline || t.DEADLINE || '').substring(0, 10);
+    var chatId = t.chatId || t.CHAT_ID;
+    var respName = NAMES[String(respId)] || ('#' + respId);
+
+    var statusClass = od ? 'st-overdue' : 'st-' + stage.id;
+    var dateStr = dl ? formatDate(dl) : '';
+
+    return '<div class="task-item' + (od ? ' overdue' : '') + '" data-tid="' + tid + '">' +
+      '<div class="task-status-dot ' + statusClass + '"></div>' +
+      '<div class="task-content">' +
+      '<div class="task-title-row">' +
+      '<div class="task-title-text">' + esc(truncate(t.title || t.TITLE, 50)) + '</div>' +
+      (chatId ? '<span class="task-chat-icon">💬</span>' : '') +
+      '</div>' +
+      '<div class="task-meta-row">' +
+      '<span class="emp-name">' + esc(respName) + '</span>' +
+      '<span class="stage-tag" style="color:' + stage.color + '">' + stage.name + '</span>' +
+      (dl ? '<span class="deadline' + (od ? ' over' : '') + '">' + esc(dateStr) + '</span>' : '') +
+      '</div></div></div>';
+  }).join('');
+}
+
+/* ================================================================
+   CHAT VIEW
+   ================================================================ */
+function openChatView(taskId) {
+  var task = findTask(taskId);
+  if (!task) return;
+
+  currentView = { type: 'task', taskId: taskId };
+  var tid = task.id || task.ID;
+  var chatId = task.chatId || task.CHAT_ID;
+  var stage = getStage(task);
+  var respId = task.responsibleId || task.RESPONSIBLE_ID;
+  var dl = (task.deadline || task.DEADLINE || '').substring(0, 10);
+  var od = isOverdue(task);
+  var base = HOOK ? HOOK.split('/rest/')[0] : '';
+
+  // Mark mentions as seen
+  allMentions.forEach(function(m) {
+    if (m.taskId == tid && !seenKeys[m.key]) {
+      seenKeys[m.key] = true;
+    }
+  });
+  saveSeen();
+
+  // Update header
+  document.getElementById('chatTitle').textContent = task.title || task.TITLE;
+  document.getElementById('chatMeta').innerHTML =
+    '<span class="meta-status" style="color:' + stage.color + '">' + stage.name + '</span>' +
+    '<span class="meta-sep">·</span>' +
+    '<span>' + esc(NAMES[String(respId)] || '#' + respId) + '</span>' +
+    (dl ? '<span class="meta-sep">·</span><span style="color:' + (od ? 'var(--red)' : 'var(--text-secondary)') + '">' + esc(formatDate(dl)) + '</span>' : '');
+
+  document.getElementById('chatLink').href = base + '/company/personal/user/' + MY_ID + '/tasks/task/view/' + tid + '/';
+
+  // Show chat view, hide welcome
+  document.getElementById('welcomeState').style.display = 'none';
+  document.getElementById('chatView').style.display = 'flex';
+
+  // Mobile: hide left panel
+  document.getElementById('leftPanel').classList.add('hidden-mobile');
+
+  // Load chat messages
+  var msgArea = document.getElementById('chatMessages');
+
+  if (!chatId) {
+    // Show task details without chat
+    var desc = (task.description || task.DESCRIPTION || '').trim();
+    var html = '<div class="no-chat-msg">' +
+      '<div style="font-size:32px;opacity:0.3;margin-bottom:8px">📋</div>' +
+      '<div style="font-weight:600;margin-bottom:4px">Чат не привязан к задаче</div>' +
+      (desc ? '<div style="font-size:12px;color:var(--text-secondary);max-width:400px;line-height:1.6;word-break:break-word">' + stripHtml(desc).substring(0, 300) + '</div>' : '') +
+      '</div>';
+    msgArea.innerHTML = html;
+    return;
+  }
+
+  // Show loading
+  msgArea.innerHTML = '<div class="chat-loading"><div class="ring"></div> Загрузка сообщений...</div>';
+
+  // Use cached messages or fetch
+  if (taskChatCache[tid]) {
+    renderChatMessages(tid, taskChatCache[tid]);
+  } else {
+    bxPost('im.dialog.messages.get', { DIALOG_ID: 'chat' + chatId, LIMIT: 50 })
+    .then(function(r) {
+      if (r.error) {
+        msgArea.innerHTML = '<div class="no-chat-msg"><div style="font-size:24px;opacity:0.3">⚠️</div>Ошибка: ' + esc(r.error_description || r.error) + '</div>';
+        return;
+      }
+      var raw = r && r.result;
+      var msgs = raw && raw.messages;
+      // Cache users
+      if (raw && raw.users) {
+        var users = Array.isArray(raw.users) ? raw.users : [];
+        users.forEach(function(u) {
+          if (u && u.id) {
+            userCache[String(u.id)] = {
+              name: u.name || ('#' + u.id),
+              color: u.color || '#5a6070',
+              avatar: u.avatar || ''
+            };
+          }
+        });
+      }
+      if (!msgs) { taskChatCache[tid] = []; msgArea.innerHTML = '<div class="no-chat-msg">В чате нет сообщений</div>'; return; }
+      msgs = Array.isArray(msgs) ? msgs : [];
+      taskChatCache[tid] = msgs;
+      // Track lastMsgId
+      msgs.forEach(function(m) {
+        var mid = Number(m.id);
+        var cId = m.chat_id || chatId;
+        if (mid && (!lastMsgId[cId] || mid > lastMsgId[cId])) lastMsgId[cId] = mid;
+      });
+      renderChatMessages(tid, msgs);
+    })
+    .catch(function(e) {
+      msgArea.innerHTML = '<div class="no-chat-msg">Ошибка сети: ' + esc(e.message) + '</div>';
+    });
+  }
+
+  renderAll();
+}
+
+function closeChat() {
+  currentView = null;
+  document.getElementById('welcomeState').style.display = 'flex';
+  document.getElementById('chatView').style.display = 'none';
+  document.getElementById('leftPanel').classList.remove('hidden-mobile');
+}
+
+function renderChatMessages(taskId, msgs) {
+  var msgArea = document.getElementById('chatMessages');
+  if (!msgs || !msgs.length) {
+    msgArea.innerHTML = '<div class="no-chat-msg">В чате пока нет сообщений</div>';
+    return;
+  }
+
+  // Sort by date ascending
+  msgs = msgs.slice().sort(function(a, b) { return (a.date || '').localeCompare(b.date || ''); });
+
+  var mentionTag = new RegExp('\\[USER=' + MY_ID + '\\]', 'gi');
+  var html = '';
+  var lastDateStr = '';
+
+  msgs.forEach(function(m) {
+    var mText = m.text || '';
+    var mDate = m.date || '';
+    var dateOnly = mDate.substring(0, 10);
+
+    // Date separator
+    if (dateOnly && dateOnly !== lastDateStr) {
+      lastDateStr = dateOnly;
+      html += '<div class="date-sep">' + formatDateRu(dateOnly) + '</div>';
+    }
+
+    // System message
+    var isSystem = !!(m.system || m.SYSTEM || m.event_id || (m.params && m.params.MESSAGE_TYPE === 'S'));
+    if (isSystem || !m.author_id || m.author_id === 0) {
+      var sysText = stripHtml(mText).trim();
+      if (sysText) {
+        html += '<div class="msg-system">' + esc(truncate(sysText, 150)) + '</div>';
       }
       return;
     }
 
-    var isMention=false;
-    if(mText&&tag.test(mText)){tag.lastIndex=0;isMention=true}
-    if(isMention)mText=mText.replace(tag,'<mark>@я</mark>');
+    var fromId = String(m.author_id || m.from_id || m.authorId || 0);
+    var isSelf = (fromId === String(MY_ID));
+    var user = userCache[fromId] || {};
+    var userName = user.name || NAMES[fromId] || ('#' + fromId);
+    var userColor = user.color || getUserColor(fromId);
+    var userLetter = userName.charAt(0).toUpperCase();
+    var timeStr = mDate.substring(11, 16);
 
-    var dateStr=(m.date||'').substring(0,16).replace('T',' ');
-    var fromId=m.author_id||m.from_id||m.authorId||0;
-    var name=NAMES[String(fromId)]||('#'+fromId);
+    // Check mention
+    var hasMention = false;
+    if (mText && mentionTag.test(mText)) {
+      mentionTag.lastIndex = 0;
+      hasMention = true;
+    }
 
-    // Форматируем: убираем HTML, но оставляем текст читаемым
-    var displayText=mText?esc(mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()):'<span style="color:var(--text3)">—</span>';
+    // Build message text (with mention highlighting)
+    var displayText = mText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!displayText) displayText = '';
+    if (hasMention) {
+      displayText = displayText.replace(mentionTag, '<mark>@' + esc(NAMES[MY_ID] || '#' + MY_ID) + '</mark>');
+    }
 
-    html+='<div class="cmt '+(isMention?'highlight':'')+'"><div class="cmt-header"><div class="cmt-author">'+esc(name)+'</div><div class="cmt-time">'+esc(dateStr)+'</div></div><div class="cmt-text">'+displayText+'</div></div>';
+    // Check for attachment
+    var attachHtml = '';
+    if (m.params) {
+      var params = typeof m.params === 'string' ? JSON.parse(m.params) : m.params;
+      if (params.ATTACH && Array.isArray(params.ATTACH)) {
+        params.ATTACH.forEach(function(att) {
+          if (att && att.NAME) {
+            attachHtml += '<div class="msg-attach"><span class="msg-attach-icon">📎</span>' + esc(att.NAME) + '</div>';
+          }
+        });
+      }
+    }
+
+    html += '<div class="msg-row' + (isSelf ? ' self' : '') + '">' +
+      '<div class="msg-avatar" style="background:' + userColor + '">' + esc(userLetter) + '</div>' +
+      '<div class="msg-body">' +
+      '<div class="msg-header">' +
+      '<span class="msg-author" style="color:' + userColor + '">' + esc(userName) + '</span>' +
+      '<span class="msg-time">' + esc(timeStr) + '</span>' +
+      '</div>' +
+      '<div class="msg-bubble' + (hasMention ? ' mention-bubble' : '') + '">' +
+      (displayText ? esc(displayText) : '') +
+      attachHtml +
+      '</div></div></div>';
   });
 
-  sec.innerHTML=html;
+  msgArea.innerHTML = html;
 
-  // Прокрутить к первому упоминанию
-  setTimeout(function(){
-    var hl=sec.querySelector('.cmt.highlight');
-    if(hl)hl.scrollIntoView({behavior:'smooth',block:'center'});
-  },350);
+  // Scroll to bottom
+  msgArea.scrollTop = msgArea.scrollHeight;
+
+  // Scroll to first mention after short delay
+  setTimeout(function() {
+    var mentionBubble = msgArea.querySelector('.mention-bubble');
+    if (mentionBubble) {
+      mentionBubble.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 300);
 }
 
-function openClosedDrill(){
-  document.getElementById('dpTitle').textContent='Закрытые задачи';
-  document.getElementById('dpMeta').innerHTML='<div class="dm-item"><div class="dm-lbl">Период</div><div class="dm-val">'+PERIOD_DAYS+' дней</div></div><div class="dm-item"><div class="dm-lbl">Всего</div><div class="dm-val">'+closedCount+'</div></div>';
-  document.getElementById('dpBody').innerHTML='<div class="empty"><div class="empty-text">'+closedCount+' завершённых задач у '+EMP_IDS.length+' сотрудников за '+PERIOD_DAYS+' дней</div></div>';
-  openPanel();
-}
-function openPanel(){document.getElementById('dp').classList.add('open');document.getElementById('ov').classList.add('show');panelOpen=true}
-function closeDrill(){document.getElementById('dp').classList.remove('open');document.getElementById('ov').classList.remove('show');panelOpen=false}
-
-// === Filters ===
-document.getElementById('mFilters').addEventListener('click',function(e){
-  var chip=e.target.closest('.fchip');if(!chip)return;
-  mentionFilter=chip.getAttribute('data-mf');
-  this.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});
-  chip.classList.add('active');renderMentions();
-});
-document.getElementById('tFilters').addEventListener('click',function(e){
-  var chip=e.target.closest('.fchip');if(!chip)return;
-  taskFilter=chip.getAttribute('data-tf');
-  this.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});
-  chip.classList.add('active');renderTasks();
-});
-function filterMentions(f,el){
-  mentionFilter=f||'all';
-  if(el){el.parentElement.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});el.classList.add('active')}
-  renderMentions();
-}
-function filterTasks(f,el){
-  taskFilter=f||'all';
-  if(el){el.parentElement.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});el.classList.add('active')}
-  renderTasks();
-}
-
-// === Render ===
-function renderMentions(){
-  var box=document.getElementById('mentionsBox');
-  var list=allMentions;
-  if(mentionFilter==='new')list=allMentions.filter(function(m){return!seenComments[m.key]});
-  else if(mentionFilter==='task')list=allMentions.filter(function(m){return m.type==='task'});
-  else if(mentionFilter==='chat')list=allMentions.filter(function(m){return m.type==='chat'});
-  else if(mentionFilter==='read')list=allMentions.filter(function(m){return seenComments[m.key]});
-  document.getElementById('mentionBadge').textContent=allMentions.length;
-  if(!list.length){
-    box.innerHTML='<div class="empty"><div class="empty-icon">💬</div><div class="empty-text">'+
-      (allMentions.length?'Нет «'+mentionFilter+'»':'Упоминаний не найдено')+'</div></div>';return;
+/* ================================================================
+   HELPERS
+   ================================================================ */
+function findTask(tid) {
+  for (var i = 0; i < activeTasks.length; i++) {
+    if (Number(activeTasks[i].id || activeTasks[i].ID) === Number(tid)) return activeTasks[i];
   }
-  box.innerHTML=list.map(function(m){
-    var isNew=!seenComments[m.key];
-    var icon=m.type==='chat'?'chat':'task';
-    var iconChar=m.type==='chat'?'💬':'T';
-    var dataAttr='data-type="'+m.type+'" data-tid="'+m.taskId+'"';
-    var authorLine=m.fromName?'<span style="color:var(--cyan);font-weight:500;font-size:11px;margin-right:4px">'+esc(m.fromName)+':</span> ':'';
-    return '<div class="mention '+(isNew?'new':'read')+'" '+dataAttr+'><div class="mention-head"><div class="mention-source"><span class="src-icon '+icon+'">'+iconChar+'</span> '+esc(truncate(m.title,45))+'</div><div class="mention-time">'+esc(m.date)+'</div></div><div class="mention-text">'+authorLine+m.text+'</div></div>';
-  }).join('');
+  return null;
 }
-function renderTasks(){
-  var box=document.getElementById('tasksBox');
-  var list=activeTasks;
-  if(taskFilter==='in-progress')list=activeTasks.filter(function(t){return getStage(t).id==='in-progress'});
-  else if(taskFilter==='new')list=activeTasks.filter(function(t){return getStage(t).id==='new'});
-  else if(taskFilter==='review')list=activeTasks.filter(function(t){return getStage(t).id==='review'});
-  else if(taskFilter==='overdue')list=activeTasks.filter(isOverdue);
-  document.getElementById('taskBadge').textContent=activeTasks.length;
-  if(!list.length){
-    box.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Нет задач</div></div>';return;
+
+function getStage(t) {
+  var s = String(t.status || t.STATUS || '0');
+  if (s === '1' || s === '2') return { id: 'new', name: 'Новая', color: 'var(--cyan)' };
+  if (s === '3') return { id: 'in-progress', name: 'В работе', color: 'var(--orange)' };
+  if (s === '4') return { id: 'review', name: 'На проверке', color: 'var(--yellow)' };
+  if (s === '5') return { id: 'done', name: 'Завершена', color: 'var(--green)' };
+  return { id: 'new', name: 'Новая', color: 'var(--cyan)' };
+}
+
+function isOverdue(t) {
+  var dl = t.deadline || t.DEADLINE;
+  if (!dl) return false;
+  return new Date(dl) < new Date();
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function truncate(s, n) {
+  if (!s) return '';
+  s = String(s).trim();
+  return s.length <= n ? s : s.substring(0, n - 1) + '…';
+}
+
+function stripHtml(html) {
+  return String(html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function saveSeen() {
+  try { localStorage.setItem('dk_seen', JSON.stringify(seenKeys)); } catch (e) {}
+}
+
+function getUserColor(uid) {
+  var u = userCache[String(uid)];
+  if (u && u.color) return u.color;
+  // Generate a consistent color from user ID
+  var colors = ['#e05555', '#e08838', '#c4a83a', '#5aab5a', '#3aa8a0', '#4a90d9', '#7c5cfc', '#c75cb0', '#8892a8', '#d47a9a'];
+  var idx = 0;
+  for (var i = 0; i < String(uid).length; i++) idx += String(uid).charCodeAt(i);
+  return colors[idx % colors.length];
+}
+
+function getUserLetter(uid) {
+  var u = userCache[String(uid)];
+  if (u && u.name) return u.name.charAt(0).toUpperCase();
+  var name = NAMES[String(uid)];
+  if (name) return name.charAt(0).toUpperCase();
+  return '#';
+}
+
+function formatTime(dateStr) {
+  if (!dateStr) return '';
+  // Format: "2026-04-02 21:04" → "21:04" or "02 апр" depending on age
+  var d = dateStr.replace('T', ' ').substring(0, 16);
+  var parts = d.split(' ');
+  if (parts.length < 2) return d;
+  var datePart = parts[0];
+  var timePart = parts[1];
+  var today = new Date().toISOString().substring(0, 10);
+  if (datePart === today) return timePart;
+  return datePart.substring(5).replace('-', '.');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  // "2026-04-02" → "02.04"
+  var parts = dateStr.split('-');
+  if (parts.length < 3) return dateStr;
+  return parts[2] + '.' + parts[1];
+}
+
+function formatDateRu(dateStr) {
+  if (!dateStr) return '';
+  var months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  var parts = dateStr.split('-');
+  if (parts.length < 3) return dateStr;
+  var day = parseInt(parts[2], 10);
+  var month = parseInt(parts[1], 10) - 1;
+  var year = parts[0];
+  return day + ' ' + months[month] + ' ' + year;
+}
+
+/* ================================================================
+   RENDER ALL
+   ================================================================ */
+function renderAll() {
+  renderKPIs();
+  renderPanelList();
+  // Refresh chat view if open
+  if (currentView && currentView.taskId && taskChatCache[currentView.taskId]) {
+    renderChatMessages(currentView.taskId, taskChatCache[currentView.taskId]);
   }
-  list.sort(function(a,b){
-    var oa=isOverdue(a)?0:1,ob=isOverdue(b)?0:1;
-    if(oa!==ob)return oa-ob;
-    return(a.deadline||a.DEADLINE||'').localeCompare(b.deadline||b.DEADLINE||'');
-  });
-  box.innerHTML=list.map(function(t){
-    var stage=getStage(t),od=isOverdue(t),tid=t.id||t.ID;
-    var respId=t.responsibleId||t.RESPONSIBLE_ID;
-    var dl=(t.deadline||t.DEADLINE||'').substring(0,10);
-    var chatId=t.chatId||t.CHAT_ID;
-    var chatHint=chatId?'<span style="color:var(--purple);font-size:10px">💬'+chatId+'</span>':'';
-    return '<div class="task-row" data-tid="'+tid+'"><div class="task-dot '+(od?'overdue':stage.id)+'"></div><div class="task-info"><div class="task-title">'+esc(truncate(t.title||t.TITLE,70))+'</div><div class="task-meta"><span class="emp">'+esc(NAMES[String(respId)]||('#'+respId))+'</span><span class="stage" style="color:'+stage.color+'">'+stage.name+'</span><span class="deadline '+(od?'over':'')+'">'+(dl||'—')+'</span>'+chatHint+'</div></div></div>';
-  }).join('');
 }
-function renderKPI(){
-  var newM=allMentions.filter(function(m){return!seenComments[m.key]}).length;
-  var inWork=activeTasks.filter(function(t){return getStage(t).id==='in-progress'}).length;
-  var overdue=activeTasks.filter(isOverdue).length;
-  document.getElementById('kpiTotal').textContent=activeTasks.length;
-  document.getElementById('kpiInWork').textContent=inWork;
-  document.getElementById('kpiOverdue').textContent=overdue;
-  document.getElementById('kpiMentions').textContent=allMentions.length;
-  var newEl=document.getElementById('kpiMentionsNew');
-  if(newM>0){newEl.textContent='+'+newM;newEl.style.display='inline'}
-  else{newEl.textContent='';newEl.style.display='none'}
-  document.getElementById('kpiDone').textContent=closedCount;
-}
-function renderAll(){renderKPI();renderMentions();renderTasks()}
 
-function getStage(t){
-  var s=String(t.status||t.STATUS||'0');
-  if(s==='2')return{id:'new',name:'Новая',color:'var(--accent)'};
-  if(s==='3')return{id:'in-progress',name:'В работе',color:'var(--orange)'};
-  if(s==='4')return{id:'review',name:'На проверке',color:'var(--yellow)'};
-  return{id:'new',name:'Новая',color:'var(--accent)'};
-}
-function isOverdue(t){
-  var dl=t.deadline||t.DEADLINE;if(!dl)return false;
-  return new Date(dl)<new Date();
-}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function truncate(s,n){if(!s)return '';s=String(s).trim();return s.length<=n?s:s.substring(0,n-1)+'...'}
-function loadSeen(){try{seenComments=JSON.parse(localStorage.getItem('dk_seen')||'{}')}catch(e){seenComments={}}}
-function saveSeen(){try{localStorage.setItem('dk_seen',JSON.stringify(seenComments))}catch(e){}}
-
-loadConfig();loadSeen();
-if(!localStorage.getItem('dk_hook')){
-  try{localStorage.setItem('dk_hook',HOOK);localStorage.setItem('dk_myid',MY_ID);localStorage.setItem('dk_empids',EMP_IDS.join(','))}catch(e){}
-}
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){
-    if(panelOpen){closeDrill();return}
-    if(document.getElementById('configOv').classList.contains('show')){closeConfig();return}
+/* ================================================================
+   EVENT DELEGATION — clicks on panel list
+   ================================================================ */
+document.getElementById('panelList').addEventListener('click', function(e) {
+  // Mention item click
+  var mentionEl = e.target.closest('.mention-item');
+  if (mentionEl) {
+    var tid = mentionEl.getAttribute('data-tid');
+    if (tid) openChatView(Number(tid));
+    return;
+  }
+  // Task item click
+  var taskEl = e.target.closest('.task-item');
+  if (taskEl) {
+    var tid = taskEl.getAttribute('data-tid');
+    if (tid) openChatView(Number(tid));
+    return;
   }
 });
+
+/* ================================================================
+   KEYBOARD SHORTCUTS
+   ================================================================ */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('configOverlay').classList.contains('show')) {
+      closeConfig(); return;
+    }
+    if (currentView) {
+      closeChat(); return;
+    }
+  }
+});
+
+/* ================================================================
+   INIT
+   ================================================================ */
+initConfig();
+renderAll();
 </script>
 </body>
 </html>
