@@ -270,7 +270,7 @@ function toast(msg,type){
 // === API ===
 function bxPost(method,body){
   if(!HOOK)return Promise.resolve(null);
-  var u='/api/'+method+'?hook='+encodeURIComponent(HOOK.trim());
+  var u='/api/'+method+'?hook='+encodeURIComponent(HOOK);
   return fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})})
     .then(function(r){return r.json()}).catch(function(e){return{error:e.message}});
 }
@@ -399,7 +399,6 @@ function renderTasks(){
     var od=isOverdue(t);
     var dl=(t.deadline||t.DEADLINE||'').substring(0,10);
     var tid=t.id||t.ID;
-    var respId=t.responsibleId||t.RESPONSIBLE_ID;
     var newC=hasNewComments(tid);
     return '<div class="task-row '+(newC?'new-comments':'')+'" onclick="openTask('+tid+')"><div class="task-status '+(od?'overdue':stage.id)+'"></div><div class="task-info"><div class="task-title">'+esc(truncate(t.title||t.TITLE,60))+'</div><div class="task-meta"><span class="emp">'+esc(NAMES[String(respId)]||'#'+respId)+'</span><span class="stage" style="color:'+stage.color+'">'+stage.name+'</span><span class="deadline '+(od?'over':'')+'">'+(dl||'—')+'</span></div></div>'+(newC?'<div class="task-badge">новые</div>':'')+'</div>';
   }).join('');
