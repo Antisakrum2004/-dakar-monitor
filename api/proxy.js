@@ -6,9 +6,9 @@ export default async function handler(req, res) {
     return res.status(204).end();
   }
   const hook = req.query.hook || '';
-  if (!hook) return res.status(400).json({ error: 'hook обязателен' });
-  const path = req.url.split('/api/')[1]?.split('?')[0] || '';
-  const apiUrl = hook + '/' + path + '.json';
+  const method = req.query.method || '';
+  if (!hook || !method) return res.status(400).json({ error: 'hook и method обязательны' });
+  const apiUrl = hook + '/' + method + '.json';
   try {
     const r = await fetch(apiUrl, {
       method: 'POST',
