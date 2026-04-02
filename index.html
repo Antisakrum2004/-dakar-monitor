@@ -10,11 +10,9 @@
 :root{--bg:#0a0d14;--bg2:#10141e;--bg3:#181d2a;--glass:rgba(18,21,31,.55);--glass-border:rgba(255,255,255,.06);--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.12);--text:#e8ecf4;--text2:#8892a8;--text3:#4a5268;--accent:#00d4ff;--green:#22d47e;--yellow:#f5a623;--red:#ff4f6a;--orange:#ff8c42;--cyan:#22d4ee;--purple:#7c5cfc;--mono:'JetBrains Mono',monospace;--radius:10px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
-/* Hide Vercel Toolbar injection */
 [data-v-inspector],iframe[src*="vercel"],.vercel-toast,[class*="__vercel"]{display:none!important;opacity:0!important;pointer-events:none!important;height:0!important;width:0!important;position:fixed!important;top:-9999px!important;z-index:-1!important}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
 
-/* Header */
 .header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--glass-border);background:var(--bg2);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
 .brand{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .brand .bdot{width:8px;height:8px;border-radius:50%;background:var(--orange)}
@@ -27,7 +25,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn.primary:disabled{opacity:.4;cursor:not-allowed}
 .btn:disabled{opacity:.35;cursor:not-allowed}
 
-/* KPI */
 .kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px 24px;border-bottom:1px solid var(--glass-border)}
 @media(max-width:700px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
 .kpi{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:14px 16px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,opacity .15s}
@@ -37,13 +34,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .kpi-val{font-family:var(--mono);font-size:28px;font-weight:700;line-height:1}
 .kpi-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
 .kpi.hint{font-size:10px;color:var(--text3);margin-top:2px}
-.kpi.cursor{cursor:pointer;transition:opacity .15s}.kpi.cursor:hover{opacity:.8}
 
-/* Main grid */
 .main{display:grid;grid-template-columns:1fr 1.4fr;gap:0;height:calc(100vh - 170px)}
 @media(max-width:900px){.main{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 170px)}}
 
-/* Sections */
 .section{border-right:1px solid var(--glass-border);display:flex;flex-direction:column}
 .section:last-child{border-right:none}
 .section-head{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--glass-border);flex-shrink:0}
@@ -51,7 +45,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .section-badge{background:var(--orange);color:#000;font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;min-width:20px;text-align:center}
 .section-body{flex:1;overflow-y:auto;padding:0;-webkit-overflow-scrolling:touch}
 
-/* Mention items */
 .mention{padding:14px 20px;border-bottom:1px solid var(--glass-border);cursor:pointer;transition:background .1s;border-left:3px solid transparent}
 .mention:hover{background:rgba(79,139,255,.06);border-left-color:var(--purple)}
 .mention:active{background:rgba(79,139,255,.12);border-left-color:var(--accent)}
@@ -66,8 +59,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .mention.new{border-left:3px solid var(--accent)}
 .mention.read{opacity:.55}
 
-/* Task rows */
-.task-row{padding:12px 20px;border-bottom:1px solid var(--glass-border);cursor:pointer;transition:background .1s;transition:border-color .1s;display:flex;align-items:center;gap:14px;border-left:3px solid transparent}
+.task-row{padding:12px 20px;border-bottom:1px solid var(--glass-border);cursor:pointer;transition:background .1s,border-color .1s;display:flex;align-items:center;gap:14px;border-left:3px solid transparent}
 .task-row:hover{background:rgba(79,139,255,.06);border-left-color:var(--accent)}
 .task-row:active{background:rgba(79,139,255,.12);border-left-color:var(--green)}
 .task-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
@@ -79,13 +71,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .task-meta .stage{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,.05);text-transform:uppercase;letter-spacing:.04em}
 .task-meta .deadline{color:var(--text3)}
 .task-meta .deadline.over{color:var(--red)}
-.task-badge{font-family:var(--mono);font-size:9px;font-weight:700;background:var(--green);color:#000;padding:2px 6px;border-radius:8px;flex-shrink:0}
 
-/* Drill panel — right sidebar like dashboard */
+/* Drill panel — right sidebar */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none}.ov.show{display:block}
 .dpanel{position:fixed;right:0;top:0;bottom:0;width:520px;background:rgba(13,16,24,.92);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-left:1px solid var(--glass-border);z-index:200;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column}
 .dpanel.open{transform:translateX(0)}
-@media(max-width:600px){.dpanel{width:100%;border-left:none}}
+@media(max-width:600px){.dpanel{width:100%}}
 .dhead{padding:18px 22px;border-bottom:1px solid var(--glass-border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
 .dtitle{font-size:16px;font-weight:700;line-height:1.3;flex:1;margin-right:12px}
 .dcls{width:28px;height:28px;background:rgba(18,21,31,.6);border:1px solid var(--glass-border);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2);transition:all .15s;flex-shrink:0}
@@ -94,10 +85,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .dm-item{display:flex;flex-direction:column;gap:2px}
 .dm-lbl{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
 .dm-val{color:var(--text);font-weight:600}
+.dm-val a{color:var(--accent);text-decoration:none}.dm-val a:hover{text-decoration:underline}
 .dbody{flex:1;overflow-y:auto;padding:0;-webkit-overflow-scrolling:touch}
 .dbody::-webkit-scrollbar{width:5px}.dbody::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.dsection{padding:14px 22px;border-bottom:1px solid var(--glass-border)}
+.dsection-title{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.dsection-title .ds-dot{width:6px;height:6px;border-radius:50%}
+.dsection-title .ds-dot.blue{background:var(--accent)}
+.dsection-title .ds-dot.green{background:var(--green)}
+.dsection-title .ds-dot.purple{background:var(--purple)}
+.ddesc{font-size:13px;color:var(--text2);line-height:1.6;word-break:break-word}
+.ddesc a{color:var(--accent)}
+.ddesc img{max-width:100%;border-radius:6px;margin:8px 0}
 
-/* Comments inside drill */
 .cmt{padding:14px 22px;border-bottom:1px solid var(--glass-border)}
 .cmt-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .cmt-author{font-size:13px;font-weight:600;color:var(--text)}
@@ -105,7 +105,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cmt-text{font-size:13px;color:var(--text2);line-height:1.5;word-break:break-word}
 .cmt-text mark{background:rgba(0,212,255,.2);color:var(--accent);border-radius:2px;padding:0 2px}
 .cmt.is-new{background:rgba(34,212,126,.04)}
-.cmt-sep{padding:12px 22px;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--glass-border);background:rgba(18,21,31,.3)}
+.cmt.highlight{background:rgba(0,212,255,.06);border-left:3px solid var(--accent)}
 
 /* Config modal */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
@@ -121,17 +121,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .modal-body .hint{font-size:10px;color:var(--text3);margin-top:4px}
 .modal-footer{padding:16px 22px;border-top:1px solid var(--glass-border);display:flex;justify-content:flex-end;gap:8px}
 
-/* Empty */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:var(--text3);font-size:13px;text-align:center;gap:8px}
 .empty-icon{font-size:32px;opacity:.4}
 .empty-text{font-family:var(--mono);font-size:11px}
-
-/* Loading */
 .loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:10px;color:var(--text3);font-family:var(--mono);font-size:12px}
 .ring{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Filters */
 .filters{display:flex;gap:6px;padding:10px 20px;border-bottom:1px solid var(--glass-border);flex-wrap:wrap;flex-shrink:0}
 .fchip{padding:4px 10px;border:1px solid var(--glass-border);border-radius:12px;font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .1s;color:var(--text2);background:transparent;-webkit-user-select:none;user-select:none}
 .fchip:hover{border-color:var(--border2);color:var(--text)}
@@ -139,14 +135,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .fchip.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
 .fchip.active:hover{opacity:.85}
 
-/* Status bar */
 .status-bar{padding:8px 20px;border-bottom:1px solid var(--glass-border);font-family:var(--mono);font-size:10px;color:var(--text3);display:flex;align-items:center;gap:8px;flex-shrink:0}
 .status-bar .sloader{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
   <div class="brand">
     <div class="bdot"></div>
@@ -159,21 +153,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   </div>
 </div>
 
-<!-- KPI -->
 <div class="kpi-row">
   <div class="kpi cyan" onclick="filterTasks('all',document.querySelector('[data-tf=all]'))"><div class="kpi-val" id="kpiTotal">-</div><div class="kpi-lbl">Активных задач</div><div class="hint">4 сотрудника</div></div>
   <div class="kpi orange" onclick="filterTasks('in-progress',document.querySelector('[data-tf=in-progress]'))"><div class="kpi-val" id="kpiInWork">-</div><div class="kpi-lbl">В работе</div><div class="hint">статус «в работе»</div></div>
   <div class="kpi red" onclick="filterTasks('overdue',document.querySelector('[data-tf=overdue]'))"><div class="kpi-val" id="kpiOverdue">-</div><div class="kpi-lbl">Просрочено</div><div class="hint">прошли дедлайны</div></div>
-  <div class="kpi cyan" onclick="filterMentions('all',document.querySelector('[data-mf=all]'))"><div class="kpi-val" id="kpiMentions">-</div><div class="kpi-lbl">Упоминания</div><div class="hint">тегнули тебя</div></div>
-  <div class="kpi green" onclick="openClosedDrill()"><div class="kpi-val" id="kpiDone">-</div><div class="kpi-lbl">Закрыто за 90д</div><div class="hint">завершённые</div></div>
+  <div class="kpi purple" onclick="filterMentions('all',document.querySelector('[data-mf=all]'))"><div class="kpi-val" id="kpiMentions">-</div><div class="kpi-lbl">Упоминания</div><div class="kpi-new" id="kpiMentionsNew"></div></div>
+  <div class="kpi green" onclick="openClosedDrill()"><div class="kpi-val" id="kpiDone">-</div><div class="kpi-lbl">Закрыто за 30д</div><div class="hint">завершённые</div></div>
 </div>
 
-<!-- Status bar -->
-<div class="status-bar" id="statusBar">Готов к загрузке</div>
+<div class="status-bar" id="statusBar">Нажмите «Загрузить» для обновления данных</div>
 
-<!-- Main -->
 <div class="main">
-  <!-- Left: Mentions -->
   <div class="section">
     <div class="section-head">
       <div class="section-title">💬 Упоминания <span class="section-badge" id="mentionBadge">0</span></div>
@@ -181,12 +171,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="filters" id="mFilters">
       <div class="fchip active" data-mf="all">Все</div>
       <div class="fchip" data-mf="new">Новые</div>
+      <div class="fchip" data-mf="task">Задачи</div>
+      <div class="fchip" data-mf="chat">Чаты</div>
       <div class="fchip" data-mf="read">Прочитанные</div>
     </div>
     <div class="section-body" id="mentionsBox"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">Нажмите «Загрузить»</div></div></div>
   </div>
-
-  <!-- Right: Tasks -->
   <div class="section">
     <div class="section-head">
       <div class="section-title">📋 Задачи <span class="section-badge" id="taskBadge">0</span></div>
@@ -202,7 +192,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   </div>
 </div>
 
-<!-- Overlay + Drill panel (right sidebar) -->
 <div class="ov" id="ov" onclick="closeDrill()"></div>
 <div class="dpanel" id="dp">
   <div class="dhead">
@@ -213,7 +202,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="dbody" id="dpBody"><div class="empty"><div class="empty-text">Загрузка...</div></div></div>
 </div>
 
-<!-- Config Modal -->
 <div class="modal-ov" id="configOv">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-head">
@@ -223,12 +211,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="modal-body">
       <label>Вебхук Дакара (входящий)</label>
       <input type="text" id="hookInput" placeholder="https://dakar.bitrix24.ru/rest/1/xxxxx/"/>
-      <div class="hint">CRM → Вебхуки → Входящий webhook (права: task)</div>
+      <div class="hint">CRM → Вебхуки → Входящий webhook (права: task, im, user)</div>
       <label>Твой ID в Дакаре</label>
       <input type="text" id="myIdInput" placeholder="123"/>
       <label>Сотрудники под контролем (ID через запятую)</label>
       <input type="text" id="empIdsInput" placeholder="10,20,30"/>
-      <div class="hint">ID пользователей в Дакаре, которые делают задачи</div>
     </div>
     <div class="modal-footer">
       <button class="btn" onclick="closeConfig()">Отмена</button>
@@ -241,8 +228,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 var HOOK='https://dakar.bitrix24.ru/rest/103557/7vdwpqb1buur4j0x/',
     MY_ID='103557',
     EMP_IDS=[101861,15378,68370,15394],
+    PERIOD_DAYS=30,
     activeTasks=[],closedCount=0,allMentions=[],seenComments={},
-    mentionFilter='all',taskFilter='all',panelOpen=false;
+    mentionFilter='all',taskFilter='all',panelOpen=false,
+    chatCache={};
 var NAMES={'103557':'Предеин А.','101861':'Забиров Т.','15378':'Макаров В.','68370':'Соколовский А.','15394':'Приходько К.'};
 
 // === Config ===
@@ -250,7 +239,6 @@ function loadConfig(){
   try{var h=localStorage.getItem('dk_hook');if(h)HOOK=h}catch(e){}
   try{var m=localStorage.getItem('dk_myid');if(m)MY_ID=m}catch(e){}
   try{var e=localStorage.getItem('dk_empids');if(e)EMP_IDS=e.split(',').map(Number).filter(Boolean)}catch(e){}
-  try{var n=localStorage.getItem('dk_names');if(n)NAMES=JSON.parse(n)}catch(e){}
 }
 function saveConfig(){
   HOOK=document.getElementById('hookInput').value.trim();
@@ -270,13 +258,13 @@ function openConfig(){
 function closeConfig(){document.getElementById('configOv').classList.remove('show')}
 document.getElementById('configOv').addEventListener('click',function(e){if(e.target===this)closeConfig()});
 
-// === Status bar ===
+// === Status ===
 function setStatus(msg,loading){
   var el=document.getElementById('statusBar');
   el.innerHTML=(loading?'<div class="sloader"></div> ':'')+esc(msg);
 }
 
-// === API (proper filter wrapper!) ===
+// === API ===
 function bxPost(method,body){
   if(!HOOK)return Promise.resolve(null);
   var u='/api/'+method+'?hook='+encodeURIComponent(HOOK.trim());
@@ -304,180 +292,138 @@ function loadData(){
   if(!MY_ID||!EMP_IDS.length){openConfig();return}
   var btn=document.getElementById('loadBtn');
   btn.disabled=true;btn.textContent='...';
-  activeTasks=[];closedCount=0;allMentions=[];
-  setStatus('Загрузка активных задач...',true);
+  activeTasks=[];closedCount=0;allMentions=[];chatCache={};
 
-  // Calculate date 90 days ago
-  var d90=new Date();d90.setDate(d90.getDate()-90);
-  var date90=d90.toISOString().substring(0,10);
-
-  var sel=['ID','TITLE','RESPONSIBLE_ID','STATUS','STAGE_ID','CREATED_DATE','CLOSED_DATE','DEADLINE','DESCRIPTION'];
+  var dFrom=new Date();dFrom.setDate(dFrom.getDate()-PERIOD_DAYS);
+  var dateFrom=dFrom.toISOString().substring(0,10);
   var allIds=EMP_IDS.slice();
   if(MY_ID&&allIds.indexOf(Number(MY_ID))===-1)allIds.push(Number(MY_ID));
 
-  // 1) Active tasks: not completed, created in last 90 days
-  fetchTasksPaginated({'RESPONSIBLE_ID':allIds,'!STATUS':[5,6,7],'>=CREATED_DATE':date90},sel)
-  .then(function(tasks){
-    activeTasks=tasks||[];
-    setStatus('Загрузка закрытых (счётчик)...',true);
+  var sel=['ID','TITLE','RESPONSIBLE_ID','STATUS','STAGE_ID','CREATED_DATE','CLOSED_DATE','DEADLINE','DESCRIPTION'];
+  setStatus('Загрузка задач и чатов...',true);
 
-    // 2) Closed count only (lightweight - just ID)
-    return bxPost('tasks.task.list',{filter:{'RESPONSIBLE_ID':allIds,'STATUS':5,'>=CLOSED_DATE':date90},select:['ID']});
-  })
-  .then(function(r){
-    if(r&&r.result&&r.result.tasks)closedCount=r.result.tasks.length;
-    setStatus('Анализ упоминаний...',true);
+  Promise.all([
+    fetchTasksPaginated({'RESPONSIBLE_ID':allIds,'!STATUS':[5,6,7],'>=CREATED_DATE':dateFrom},sel),
+    bxPost('tasks.task.list',{filter:{'RESPONSIBLE_ID':allIds,'STATUS':5,'>=CLOSED_DATE':dateFrom},select:['ID']}),
+    bxPost('im.dialog.list',{})
+  ]).then(function(results){
+    var tasks=results[0]||[];
+    var closedR=results[1];
+    var dialogsR=results[2];
+    activeTasks=tasks;
+    closedCount=(closedR&&closedR.result&&closedR.result.tasks)?closedR.result.tasks.length:0;
 
-    // 3) Extract mentions from active task descriptions
-    loadSeen();
-    extractMentions(activeTasks);
+    // Task mentions from descriptions
+    extractTaskMentions(tasks);
 
-    // 4) Done
+    // Chat mentions
+    if(dialogsR&&!dialogsR.error&&dialogsR.result){
+      setStatus('Поиск упоминаний в чатах...',true);
+      return processChatMentions(dialogsR.result);
+    }
+    return Promise.resolve();
+  }).then(function(){
     btn.disabled=false;btn.textContent='Загрузить';
-    setStatus('Загружено: '+activeTasks.length+' активных, '+closedCount+' закрытых за 90 дней',false);
+    setStatus('Загружено: '+activeTasks.length+' активных, '+closedCount+' закрытых, '+allMentions.length+' упоминаний',false);
     renderAll();
-  })
-  .catch(function(e){
+  }).catch(function(e){
     btn.disabled=false;btn.textContent='Загрузить';
     setStatus('Ошибка: '+e.message,false);
   });
 }
 
-// === Mentions ===
-function extractMentions(tasks){
-  allMentions=[];
+// === Task Mentions ===
+function extractTaskMentions(tasks){
   var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
-  var userName=NAMES[MY_ID]||('Пользователь #'+MY_ID);
   tasks.forEach(function(t){
     var desc=t.description||'';
     if(tag.test(desc)){
       tag.lastIndex=0;
       var text=desc.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-      text=text.replace(tag,'<mark>@'+esc(userName)+'</mark>');
+      text=text.replace(tag,'<mark>@'+esc(NAMES[MY_ID]||'#'+MY_ID)+'</mark>');
       allMentions.push({
-        taskId:t.id||t.ID,
-        taskTitle:t.title||t.TITLE,
-        text:text,
-        date:(t.createdDate||t.CREATED_DATE||'').substring(0,16),
+        type:'task',taskId:t.id||t.ID,
+        title:t.title||t.TITLE,
+        text:text,date:(t.createdDate||t.CREATED_DATE||'').substring(0,16),
         key:'d_'+(t.id||t.ID)
       });
     }
   });
-  allMentions.sort(function(a,b){return(b.date||'').localeCompare(a.date||'')});
 }
 
-// === Task helpers ===
-function getStage(t){
-  var s=String(t.status||t.STATUS||'0');
-  if(s==='2')return{id:'new',name:'Новая',color:'var(--accent)'};
-  if(s==='3')return{id:'in-progress',name:'В работе',color:'var(--orange)'};
-  if(s==='4')return{id:'review',name:'На проверке',color:'var(--yellow)'};
-  return{id:'new',name:'Новая',color:'var(--accent)'};
-}
-function isOverdue(t){
-  var dl=t.deadline||t.DEADLINE;
-  if(!dl)return false;
-  return new Date(dl)<new Date();
-}
+// === Chat Mentions ===
+function processChatMentions(dialogResult){
+  // im.dialog.list can return array or {items:[]}
+  var dialogs=Array.isArray(dialogResult)?dialogResult:(dialogResult.items||[]);
+  var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
+  var mentionDialogs=[];
 
-// === Filter chips (event delegation — no INP issues) ===
-document.getElementById('mFilters').addEventListener('click',function(e){
-  var chip=e.target.closest('.fchip');if(!chip)return;
-  mentionFilter=chip.getAttribute('data-mf');
-  var chips=this.querySelectorAll('.fchip');
-  for(var i=0;i<chips.length;i++)chips[i].classList.remove('active');
-  chip.classList.add('active');
-  renderMentions();
-});
-document.getElementById('tFilters').addEventListener('click',function(e){
-  var chip=e.target.closest('.fchip');if(!chip)return;
-  taskFilter=chip.getAttribute('data-tf');
-  var chips=this.querySelectorAll('.fchip');
-  for(var i=0;i<chips.length;i++)chips[i].classList.remove('active');
-  chip.classList.add('active');
-  renderTasks();
-});
-function filterMentions(f,el){
-  mentionFilter=f||'all';
-  if(el){var c=el.parentElement.querySelectorAll('.fchip');for(var i=0;i<c.length;i++)c[i].classList.remove('active');el.classList.add('active')}
-  renderMentions();
-}
-function filterTasks(f,el){
-  taskFilter=f||'all';
-  if(el){var c=el.parentElement.querySelectorAll('.fchip');for(var i=0;i<c.length;i++)c[i].classList.remove('active');el.classList.add('active')}
-  renderTasks();
-}
-
-// === Render ===
-function renderMentions(){
-  var box=document.getElementById('mentionsBox');
-  var list=allMentions;
-  if(mentionFilter==='new')list=allMentions.filter(function(m){return!seenComments[m.key]});
-  else if(mentionFilter==='read')list=allMentions.filter(function(m){return seenComments[m.key]});
-  document.getElementById('mentionBadge').textContent=allMentions.length;
-  if(!list.length){
-    box.innerHTML='<div class="empty"><div class="empty-icon">💬</div><div class="empty-text">'+
-      (allMentions.length?'Нет '+(mentionFilter==='new'?'новых':'прочитанных')+' упоминаний':'Упоминаний не найдено')+'</div></div>';
-    return;
-  }
-  box.innerHTML=list.map(function(m){
-    var isNew=!seenComments[m.key];
-    return '<div class="mention '+(isNew?'new':'read')+'" data-tid="'+m.taskId+'"><div class="mention-head"><div class="mention-source"><span class="src-icon task">T</span> '+esc(truncate(m.taskTitle,50))+'</div><div class="mention-time">'+esc(m.date)+'</div></div><div class="mention-text">'+m.text+'</div></div>';
-  }).join('');
-}
-function renderTasks(){
-  var box=document.getElementById('tasksBox');
-  var list=activeTasks;
-  if(taskFilter==='in-progress')list=activeTasks.filter(function(t){return getStage(t).id==='in-progress'});
-  else if(taskFilter==='new')list=activeTasks.filter(function(t){return getStage(t).id==='new'});
-  else if(taskFilter==='review')list=activeTasks.filter(function(t){return getStage(t).id==='review'});
-  else if(taskFilter==='overdue')list=activeTasks.filter(isOverdue);
-
-  document.getElementById('taskBadge').textContent=activeTasks.length;
-  if(!list.length){
-    box.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">'+
-      (activeTasks.length?'Нет задач с таким фильтром':'Нет задач')+'</div></div>';
-    return;
-  }
-  list.sort(function(a,b){
-    var oa=isOverdue(a)?0:1,ob=isOverdue(b)?0:1;
-    if(oa!==ob)return oa-ob;
-    var da=a.deadline||a.DEADLINE||'',db=b.deadline||b.DEADLINE||'';
-    return da.localeCompare(db);
+  dialogs.forEach(function(d){
+    var lastMsg=d.last_message||d.lastMessage||{};
+    var text=lastMsg.text||'';
+    if(tag.test(text)){
+      tag.lastIndex=0;
+      mentionDialogs.push({
+        chatId:d.chat_id||d.chatId||lastMsg.chat_id,
+        title:d.title||d.name||'Чат #'+(d.chat_id||d.chatId),
+        type:d.type||'chat',
+        msgId:lastMsg.id,
+        fromId:lastMsg.author_id||lastMsg.from_id||lastMsg.authorId,
+        date:lastMsg.date||'',
+        snippet:text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()
+      });
+    }
   });
-  box.innerHTML=list.map(function(t){
-    var stage=getStage(t),od=isOverdue(t),tid=t.id||t.ID;
-    var respId=t.responsibleId||t.RESPONSIBLE_ID;
-    var dl=(t.deadline||t.DEADLINE||'').substring(0,10);
-    return '<div class="task-row" data-tid="'+tid+'"><div class="task-dot '+(od?'overdue':stage.id)+'"></div><div class="task-info"><div class="task-title">'+esc(truncate(t.title||t.TITLE,70))+'</div><div class="task-meta"><span class="emp">'+esc(NAMES[String(respId)]||('#'+respId))+'</span><span class="stage" style="color:'+stage.color+'">'+stage.name+'</span><span class="deadline '+(od?'over':'')+'">'+(dl||'—')+'</span></div></div></div>';
-  }).join('');
-}
-function renderKPI(){
-  var inWork=activeTasks.filter(function(t){return getStage(t).id==='in-progress'}).length;
-  var overdue=activeTasks.filter(isOverdue).length;
-  var newM=allMentions.filter(function(m){return!seenComments[m.key]}).length;
-  document.getElementById('kpiTotal').textContent=activeTasks.length;
-  document.getElementById('kpiInWork').textContent=inWork;
-  document.getElementById('kpiOverdue').textContent=overdue;
-  document.getElementById('kpiMentions').textContent=allMentions.length+'<span style="font-size:14px;color:var(--accent);margin-left:4px">+'+newM+'</span>';
-  document.getElementById('kpiDone').textContent=closedCount;
-}
-function renderAll(){renderKPI();renderMentions();renderTasks()}
 
-// === Drill panel (right sidebar — click to open task detail) ===
+  if(!mentionDialogs.length)return Promise.resolve();
+
+  // Fetch last 20 messages from each chat that has a mention
+  var fetches=mentionDialogs.map(function(md){
+    return bxPost('im.message.list',{CHAT_ID:md.chatId,LIMIT:20}).then(function(r){
+      if(!r||!r.result)return;
+      var msgs=Array.isArray(r.result)?r.result:[];
+      chatCache[md.chatId]=msgs;
+      // Find ALL mentions in messages (not just last)
+      msgs.forEach(function(m){
+        var mText=m.text||'';
+        if(tag.test(mText)){
+          tag.lastIndex=0;
+          var cleanText=mText.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+          cleanText=cleanText.replace(tag,'<mark>@'+esc(NAMES[MY_ID]||'#'+MY_ID)+'</mark>');
+          var dateStr=(m.date||'').substring(0,16).replace('T',' ');
+          allMentions.push({
+            type:'chat',chatId:md.chatId,msgId:m.id||m.ID,
+            title:md.title,
+            text:cleanText,date:dateStr,
+            fromId:m.author_id||m.from_id||m.authorId||0,
+            key:'chat_'+md.chatId+'_'+(m.id||m.ID)
+          });
+        }
+      });
+    }).catch(function(){});
+  });
+  return Promise.all(fetches);
+}
+
+// === Drill Panel ===
 document.getElementById('tasksBox').addEventListener('click',function(e){
   var row=e.target.closest('.task-row');if(!row)return;
   openTaskDrill(Number(row.getAttribute('data-tid')));
 });
 document.getElementById('mentionsBox').addEventListener('click',function(e){
   var m=e.target.closest('.mention');if(!m)return;
-  openTaskDrill(Number(m.getAttribute('data-tid')));
+  var type=m.getAttribute('data-type');
+  if(type==='chat'){
+    openChatDrill(m.getAttribute('data-chatid'));
+  }else{
+    openTaskDrill(Number(m.getAttribute('data-tid')));
+  }
 });
+
 function openTaskDrill(tid){
   var task=null;
   activeTasks.forEach(function(t){if(Number(t.id||t.ID)===tid)task=t});
   if(!task)return;
-  // Mark seen
   seenComments['d_'+tid]=true;saveSeen();
 
   var stage=getStage(task);
@@ -492,79 +438,206 @@ function openTaskDrill(tid){
     '<div class="dm-item"><div class="dm-lbl">Ответственный</div><div class="dm-val">'+esc(NAMES[String(respId)]||('#'+respId))+'</div></div>'+
     '<div class="dm-item"><div class="dm-lbl">Дедлайн</div><div class="dm-val" style="color:'+(od?'var(--red)':'var(--text)')+'">'+(dl||'—')+'</div></div>'+
     '<div class="dm-item"><div class="dm-lbl">Создана</div><div class="dm-val">'+((task.createdDate||task.CREATED_DATE||'').substring(0,10))+'</div></div>'+
-    (base?'<div class="dm-item"><div class="dm-lbl">Открыть в Битрикс</div><div class="dm-val"><a href="'+base+'/company/personal/user/'+MY_ID+'/tasks/task/view/'+tid+'/" target="_blank" style="color:var(--accent)">↗ задача #'+tid+'</a></div></div>':'');
+    (base?'<div class="dm-item"><div class="dm-lbl">Битрикс</div><div class="dm-val"><a href="'+base+'/company/personal/user/'+MY_ID+'/tasks/task/view/'+tid+'/" target="_blank">↗ открыть #'+tid+'</a></div></div>':'');
 
-  document.getElementById('dpBody').innerHTML='<div class="loading"><div class="ring"></div>Загрузка комментариев...</div>';
-  document.getElementById('dp').classList.add('open');
-  document.getElementById('ov').classList.add('show');
-  panelOpen=true;
+  // Build panel content: description + comments
+  var desc=(task.description||task.DESCRIPTION||'').trim();
+  var html='';
 
-  fetchComments(tid).then(function(comments){
-    if(!comments||!comments.length){
-      document.getElementById('dpBody').innerHTML='<div class="empty"><div class="empty-text">Нет комментариев</div></div>';
+  if(desc){
+    html+='<div class="dsection"><div class="dsection-title"><span class="ds-dot blue"></span>Описание</div><div class="ddesc">'+desc+'</div></div>';
+  }
+
+  html+='<div class="dsection"><div class="dsection-title"><span class="ds-dot green"></span>Комментарии</div><div class="loading"><div class="ring"></div>Загрузка...</div></div>';
+
+  document.getElementById('dpBody').innerHTML=html;
+  openPanel();
+
+  // Load comments
+  bxPost('task.commentitem.getlist',{TASK_ID:tid,select:['ID','AUTHOR_ID','AUTHOR_NAME','AUTHOR_LAST_NAME','POST_MESSAGE','CREATED_DATE']})
+  .then(function(comments){
+    if(!comments||!comments.result||!comments.result.length){
+      document.getElementById('dpBody').querySelector('.dsection:last-child .loading').outerHTML='<div class="empty-text" style="padding:12px 0">Нет комментариев</div>';
       return;
     }
-    comments.sort(function(a,b){return(b.CREATED_DATE||'').localeCompare(a.CREATED_DATE||'')});
+    var cmts=Array.isArray(comments.result)?comments.result:[];
+    cmts.sort(function(a,b){return(b.CREATED_DATE||'').localeCompare(a.CREATED_DATE||'')});
     var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
-    var html='<div class="cmt-sep">Комментарии ('+comments.length+')</div>';
-    comments.forEach(function(c){
+    var chtml='';
+    cmts.forEach(function(c){
       var cId=String(c.ID||c.id||'');
       var isNew=!seenComments['c_'+tid+'_'+cId];
-      var dateStr=(c.CREATED_DATE||'').substring(0,16).replace('T',' ');
-      var name=(c.AUTHOR_NAME||'')+' '+(c.AUTHOR_LAST_NAME||'');
-      var text=(c.POST_MESSAGE||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-      if(tag.test(text)){tag.lastIndex=0;text=text.replace(tag,'<mark>@я</mark>')}
       seenComments['c_'+tid+'_'+cId]=true;
-      html+='<div class="cmt '+(isNew?'is-new':'')+'"><div class="cmt-header"><div class="cmt-author">'+esc((name||'').trim()||('#'+(c.AUTHOR_ID||'')))+'</div><div class="cmt-time">'+esc(dateStr)+'</div></div><div class="cmt-text">'+(text||'<span style="color:var(--text3)">— пустой комментарий —</span>')+'</div></div>';
+      var dateStr=(c.CREATED_DATE||'').substring(0,16).replace('T',' ');
+      var name=((c.AUTHOR_NAME||'')+' '+(c.AUTHOR_LAST_NAME||'')).trim();
+      var text=(c.POST_MESSAGE||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+      var isMention=false;
+      if(tag.test(text)){tag.lastIndex=0;text=text.replace(tag,'<mark>@я</mark>');isMention=true}
+      chtml+='<div class="cmt '+(isNew?'is-new ':'')+(isMention?'highlight ':'')+'"><div class="cmt-header"><div class="cmt-author">'+esc(name||'#'+(c.AUTHOR_ID||''))+'</div><div class="cmt-time">'+esc(dateStr)+'</div></div><div class="cmt-text">'+(text||'<span style="color:var(--text3)">— пустой —</span>')+'</div></div>';
     });
-    document.getElementById('dpBody').innerHTML=html;
-    saveSeen();
-    renderAll();
+    var lastSec=document.getElementById('dpBody').querySelector('.dsection:last-child');
+    lastSec.innerHTML='<div class="dsection-title"><span class="ds-dot green"></span>Комментарии ('+cmts.length+')</div>'+chtml;
+    saveSeen();renderAll();
   });
 }
-function fetchComments(taskId){
-  return bxPost('task.commentitem.getlist',{TASK_ID:taskId,select:['ID','AUTHOR_ID','AUTHOR_NAME','AUTHOR_LAST_NAME','POST_MESSAGE','CREATED_DATE']})
-    .then(function(r){
-      if(!r||!r.result)return[];
-      return Array.isArray(r.result)?r.result:[];
-    });
-}
-function openClosedDrill(){
-  if(!activeTasks.length&&!closedCount){return}
-  document.getElementById('dpTitle').textContent='Закрытые задачи';
-  document.getElementById('dpMeta').innerHTML='<div class="dm-item"><div class="dm-lbl">Период</div><div class="dm-val">последние 90 дней</div></div><div class="dm-item"><div class="dm-lbl">Всего</div><div class="dm-val">'+closedCount+'</div></div>';
-  document.getElementById('dpBody').innerHTML='<div class="empty"><div class="empty-text">Счётчик: '+closedCount+' завершённых задач у '+EMP_IDS.length+' сотрудников за 90 дней</div></div>';
-  document.getElementById('dp').classList.add('open');
-  document.getElementById('ov').classList.add('show');
-  panelOpen=true;
-}
-function closeDrill(){
-  document.getElementById('dp').classList.remove('open');
-  document.getElementById('ov').classList.remove('show');
-  panelOpen=false;
+
+function openChatDrill(chatId){
+  if(!chatId)return;
+  seenComments['chat_'+chatId]=true;saveSeen();
+
+  var msgs=chatCache[chatId]||[];
+  var title='Чат';
+  allMentions.forEach(function(m){if(m.chatId==chatId&&m.title)title=m.title});
+  var base=HOOK?HOOK.split('/rest/')[0]:'';
+
+  document.getElementById('dpTitle').textContent=title;
+  document.getElementById('dpMeta').innerHTML=
+    '<div class="dm-item"><div class="dm-lbl">Тип</div><div class="dm-val">Чат</div></div>'+
+    '<div class="dm-item"><div class="dm-lbl">Сообщений</div><div class="dm-val">'+msgs.length+'</div></div>'+
+    (base?'<div class="dm-item"><div class="dm-lbl">Битрикс</div><div class="dm-val"><a href="'+base+'/online/?IM_CHAT='+chatId+'" target="_blank">↗ открыть чат</a></div></div>':'');
+
+  if(!msgs.length){
+    document.getElementById('dpBody').innerHTML='<div class="empty"><div class="empty-text">Нет сообщений</div></div>';
+    openPanel();return;
+  }
+
+  var tag=new RegExp('\\[USER='+MY_ID+'\\]','gi');
+  var html='<div class="dsection"><div class="dsection-title"><span class="ds-dot purple"></span>Сообщения ('+msgs.length+')</div>';
+  msgs.forEach(function(m){
+    var mText=m.text||'';
+    var isMention=tag.test(mText);tag.lastIndex=0;
+    if(isMention)mText=mText.replace(tag,'<mark>@я</mark>');
+    var dateStr=(m.date||'').substring(0,16).replace('T',' ');
+    var fromId=m.author_id||m.from_id||m.authorId||0;
+    var name=NAMES[String(fromId)]||('#'+fromId);
+    html+='<div class="cmt '+(isMention?'highlight':'')+'"><div class="cmt-header"><div class="cmt-author">'+esc(name)+'</div><div class="cmt-time">'+esc(dateStr)+'</div></div><div class="cmt-text">'+(mText||'<span style="color:var(--text3)">— пустое —</span>')+'</div></div>';
+  });
+  html+='</div>';
+  document.getElementById('dpBody').innerHTML=html;
+  openPanel();
+
+  // Scroll to first mention
+  setTimeout(function(){
+    var hl=document.querySelector('.cmt.highlight');
+    if(hl)hl.scrollIntoView({behavior:'smooth',block:'center'});
+  },350);
 }
 
-// === Seen tracking ===
+function openClosedDrill(){
+  document.getElementById('dpTitle').textContent='Закрытые задачи';
+  document.getElementById('dpMeta').innerHTML='<div class="dm-item"><div class="dm-lbl">Период</div><div class="dm-val">'+PERIOD_DAYS+' дней</div></div><div class="dm-item"><div class="dm-lbl">Всего</div><div class="dm-val">'+closedCount+'</div></div>';
+  document.getElementById('dpBody').innerHTML='<div class="empty"><div class="empty-text">'+closedCount+' завершённых задач у '+EMP_IDS.length+' сотрудников за '+PERIOD_DAYS+' дней</div></div>';
+  openPanel();
+}
+function openPanel(){document.getElementById('dp').classList.add('open');document.getElementById('ov').classList.add('show');panelOpen=true}
+function closeDrill(){document.getElementById('dp').classList.remove('open');document.getElementById('ov').classList.remove('show');panelOpen=false}
+
+// === Filters ===
+document.getElementById('mFilters').addEventListener('click',function(e){
+  var chip=e.target.closest('.fchip');if(!chip)return;
+  mentionFilter=chip.getAttribute('data-mf');
+  this.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});
+  chip.classList.add('active');
+  renderMentions();
+});
+document.getElementById('tFilters').addEventListener('click',function(e){
+  var chip=e.target.closest('.fchip');if(!chip)return;
+  taskFilter=chip.getAttribute('data-tf');
+  this.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});
+  chip.classList.add('active');
+  renderTasks();
+});
+function filterMentions(f,el){
+  mentionFilter=f||'all';
+  if(el){el.parentElement.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});el.classList.add('active')}
+  renderMentions();
+}
+function filterTasks(f,el){
+  taskFilter=f||'all';
+  if(el){el.parentElement.querySelectorAll('.fchip').forEach(function(c){c.classList.remove('active')});el.classList.add('active')}
+  renderTasks();
+}
+
+// === Render ===
+function renderMentions(){
+  var box=document.getElementById('mentionsBox');
+  var list=allMentions;
+  if(mentionFilter==='new')list=allMentions.filter(function(m){return!seenComments[m.key]});
+  else if(mentionFilter==='task')list=allMentions.filter(function(m){return m.type==='task'});
+  else if(mentionFilter==='chat')list=allMentions.filter(function(m){return m.type==='chat'});
+  else if(mentionFilter==='read')list=allMentions.filter(function(m){return seenComments[m.key]});
+  document.getElementById('mentionBadge').textContent=allMentions.length;
+  if(!list.length){
+    box.innerHTML='<div class="empty"><div class="empty-icon">💬</div><div class="empty-text">'+
+      (allMentions.length?'Нет '+mentionFilter+' упоминаний':'Упоминаний не найдено')+'</div></div>';return;
+  }
+  box.innerHTML=list.map(function(m){
+    var isNew=!seenComments[m.key];
+    var icon=m.type==='chat'?'chat':'task';
+    var dataAttr=m.type==='chat'?'data-type="chat" data-chatid="'+m.chatId+'"':'data-type="task" data-tid="'+m.taskId+'"';
+    return '<div class="mention '+(isNew?'new':'read')+'" '+dataAttr+'><div class="mention-head"><div class="mention-source"><span class="src-icon '+icon+'">'+(m.type==='chat'?'💬':'T')+'</span> '+esc(truncate(m.title,50))+'</div><div class="mention-time">'+esc(m.date)+'</div></div><div class="mention-text">'+m.text+'</div></div>';
+  }).join('');
+}
+function renderTasks(){
+  var box=document.getElementById('tasksBox');
+  var list=activeTasks;
+  if(taskFilter==='in-progress')list=activeTasks.filter(function(t){return getStage(t).id==='in-progress'});
+  else if(taskFilter==='new')list=activeTasks.filter(function(t){return getStage(t).id==='new'});
+  else if(taskFilter==='review')list=activeTasks.filter(function(t){return getStage(t).id==='review'});
+  else if(taskFilter==='overdue')list=activeTasks.filter(isOverdue);
+  document.getElementById('taskBadge').textContent=activeTasks.length;
+  if(!list.length){
+    box.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Нет задач</div></div>';return;
+  }
+  list.sort(function(a,b){
+    var oa=isOverdue(a)?0:1,ob=isOverdue(b)?0:1;
+    if(oa!==ob)return oa-ob;
+    return(a.deadline||a.DEADLINE||'').localeCompare(b.deadline||b.DEADLINE||'');
+  });
+  box.innerHTML=list.map(function(t){
+    var stage=getStage(t),od=isOverdue(t),tid=t.id||t.ID;
+    var respId=t.responsibleId||t.RESPONSIBLE_ID;
+    var dl=(t.deadline||t.DEADLINE||'').substring(0,10);
+    return '<div class="task-row" data-tid="'+tid+'"><div class="task-dot '+(od?'overdue':stage.id)+'"></div><div class="task-info"><div class="task-title">'+esc(truncate(t.title||t.TITLE,70))+'</div><div class="task-meta"><span class="emp">'+esc(NAMES[String(respId)]||('#'+respId))+'</span><span class="stage" style="color:'+stage.color+'">'+stage.name+'</span><span class="deadline '+(od?'over':'')+'">'+(dl||'—')+'</span></div></div></div>';
+  }).join('');
+}
+function renderKPI(){
+  var newM=allMentions.filter(function(m){return!seenComments[m.key]}).length;
+  var inWork=activeTasks.filter(function(t){return getStage(t).id==='in-progress'}).length;
+  var overdue=activeTasks.filter(isOverdue).length;
+  document.getElementById('kpiTotal').textContent=activeTasks.length;
+  document.getElementById('kpiInWork').textContent=inWork;
+  document.getElementById('kpiOverdue').textContent=overdue;
+  document.getElementById('kpiMentions').textContent=allMentions.length;
+  var newEl=document.getElementById('kpiMentionsNew');
+  newEl.textContent=newM>0?' +'+newM:'';
+  newEl.style.cssText='font-size:14px;color:var(--accent);margin-left:4px;'+(newM>0?'font-weight:700':'');
+  document.getElementById('kpiDone').textContent=closedCount;
+}
+function renderAll(){renderKPI();renderMentions();renderTasks()}
+
+// === Helpers ===
+function getStage(t){
+  var s=String(t.status||t.STATUS||'0');
+  if(s==='2')return{id:'new',name:'Новая',color:'var(--accent)'};
+  if(s==='3')return{id:'in-progress',name:'В работе',color:'var(--orange)'};
+  if(s==='4')return{id:'review',name:'На проверке',color:'var(--yellow)'};
+  return{id:'new',name:'Новая',color:'var(--accent)'};
+}
+function isOverdue(t){
+  var dl=t.deadline||t.DEADLINE;if(!dl)return false;
+  return new Date(dl)<new Date();
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function truncate(s,n){if(!s)return '';s=String(s).trim();return s.length<=n?s:s.substring(0,n-1)+'...'}
 function loadSeen(){try{seenComments=JSON.parse(localStorage.getItem('dk_seen')||'{}')}catch(e){seenComments={}}}
 function saveSeen(){try{localStorage.setItem('dk_seen',JSON.stringify(seenComments))}catch(e){}}
 
-// === Utils ===
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function truncate(s,n){if(!s)return '';s=String(s).trim();return s.length<=n?s:s.substring(0,n-1)+'...'}
-
 // === Init ===
-loadConfig();
-loadSeen();
+loadConfig();loadSeen();
 if(!localStorage.getItem('dk_hook')){
   try{localStorage.setItem('dk_hook',HOOK);localStorage.setItem('dk_myid',MY_ID);localStorage.setItem('dk_empids',EMP_IDS.join(','))}catch(e){}
 }
-if(!HOOK){
-  setStatus('Настройте вебхук (кнопка ⚙)',false);
-} else {
-  setStatus('Нажмите «Загрузить» для обновления данных',false);
-}
-
-// Keyboard
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     if(panelOpen){closeDrill();return}
